@@ -1,0 +1,180 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    <link rel="stylesheet" href="https://unpkg.com/chota">
+    <script src='js/bignumber.min.js'></script>
+  </head>
+<body>
+ <div class="container">
+     <div class="row">
+         <div class="col">
+             <h2 class="is-text-center is-marginless">Generic Monero Scanner</h2>
+             <h5 class="is-text-center is-marginless">Fully <a href="">open sourced</a> scanner of monero blockchain</h5>
+         </div>
+     </div>
+     <form>
+       <fieldset id="forms_input">
+            <legend>Scan for outputs with and address and viewkey</legend>
+         <p>
+		    <label for="known-address">Popular addresses</label>
+			<select id="known-address">
+              <optgroup label="Use one of the publicly avaliable addresses">
+                <option selected="selected" value="1">Monero donation</option>
+                <option value="2">Monero forum</option>
+              </optgroup>
+		    </select>
+         </p>
+         <p>
+			<label for="address">Address</label>
+            <input id="address" type="text" value="56heRv2ANffW1Py2kBkJDy8xnWqZsSrgjLygwjua2xc8Wbksead1NK1ehaYpjQhymGK4S8NPL9eLuJ16CuEJDag8Hq3RbPV"/>
+         </p>
+         <p>
+			<label for="viewkey">Viewkey</label>
+            <input id="viewkey" type="text"i value="b45e6f38b2cd1c667459527decb438cdeadf9c64d93c8bccf40a9bf98943dc09"/>
+         <p>
+		<p>
+	   <label for="timespan">Start scannig from</label>
+		<select id="timespan">
+		  <optgroup label="Since when?">
+			<option selected="selected" value="1">One day ago</option>
+			<option value="2">One week ago</option>
+			<option value="3">One month ago</option>
+		  </optgroup>
+		</select>
+        </p>
+        <p>
+        <button class="col-4" id="submit-btn" type="button">Search</button>
+		</p>
+       </fieldset>
+     </form>
+
+  <div id="status-info" class="row"></div>
+  <div class="row">
+      <ul id="messages"></ul>
+  </div>
+ </div>
+
+<script type="text/javascript">
+
+  function add_message( message )
+  {
+     var li = document.createElement( "li" );
+     li.appendChild( document.createTextNode( "> " + message ) );
+
+     var ul = document.getElementById( "messages" );
+     ul.appendChild( li );
+  }
+
+
+ function setup_submit_btn()
+ {
+    var submit_button = document.getElementById("submit-btn");
+        
+    submit_button.addEventListener("click",
+        function(evt) 
+        {
+            if ( window.restbed.ws !== null 
+                    && window.restbed.ws.readyState === window.restbed.ws.OPEN ) 
+            {
+                window.restbed.ws.close();
+            }
+
+            open();
+        });
+ }
+
+  function open()
+  {
+     if ("WebSocket" in window)
+     {
+        var ws = new WebSocket("ws://127.0.0.1:8848/search");
+
+        ws.onopen = function()
+        {
+           add_message("Established connection.");
+
+            var address = document.getElementById("address").value;
+            var viewkey = document.getElementById("viewkey").value;
+            var timespan = document.getElementById("timespan").value;
+
+            var message = {"scanner": "outputs",
+                           "address": address, 
+                           "viewkey": viewkey,
+                           "timespan": timespan};
+
+            add_message("submitting address and viewkey to the server");
+    
+            ws.send(JSON.stringify(message));
+        };
+
+        ws.onmessage = function(evt)
+        {
+
+           var results =  JSON.parse(evt.data); 
+            
+           var status_info = document.getElementById("status-info");
+
+            results["msgs"].forEach(function(msg)
+            {
+               if (msg["status"] !== "success")
+                   return;
+
+               var data = msg["data"];
+
+               if ("progress" in data)
+               {
+                    var current_block = data["progress"]["current_block"];
+                    var blockchain_height = data["progress"]["blockchain_height"];
+
+                    status_info.innerHTML = current_block + "/" + blockchain_height;
+                    return;
+               }
+
+               if ("outputs" in data)
+               {
+                   for (var i = 0; i < data["outputs"].length; i++)
+                   {
+                       var output = data["outputs"][i];
+                       var amount = BigNumber(output["amount"]);
+                       var to_show = output.public_key + ", " + amount.toString();
+                       add_message(to_show);
+                   }
+
+                   return;
+               }
+            });
+
+            console.log(results);
+
+           //add_message(evt.data);
+           
+        };
+
+        ws.onclose = function(evt)
+        {
+           add_message("Connection closed with RFC6455 code " + evt.code + ".");
+        };
+
+        ws.onerror = function( evt )
+        {
+           add_message("Error: socket connection interrupted.");
+        };
+
+        window.restbed.ws = ws;
+     }
+     else
+     {
+        alert("WebSockets NOT supported by your Browser!");
+     }
+  }
+
+  (function()
+  {
+    window.restbed = { ws: null };
+    setup_submit_btn();
+  })();
+</script>
+</body>
+</html>

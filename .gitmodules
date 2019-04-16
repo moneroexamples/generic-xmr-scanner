@@ -1,0 +1,15 @@
+[submodule "ext/xmregcore"]
+	path = ext/xmregcore
+	url = https://github.com/moneroexamples/xmregcore.git
+[submodule "ext/drogon"]
+	path = ext/drogon
+	url = https://github.com/moneroexamples/drogon.git
+[submodule "ext/googletest"]
+	path = ext/googletest
+	url = https://github.com/google/googletest.git
+[submodule "ext/nlohmann"]
+	path = ext/nlohmann
+	url = https://github.com/nlohmann/json.git
+[submodule "ext/fiberpool"]
+	path = ext/fiberpool
+	url = https://github.com/moneroexamples/fiberpool.git

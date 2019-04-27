@@ -33,10 +33,7 @@ find_package(Drogon)
 find_package(Boost REQUIRED
     COMPONENTS fiber)
 
-add_executable(${PROJECT_NAME})
-
-target_sources(${PROJECT_NAME}
-    PRIVATE 
+add_executable(${PROJECT_NAME}
         main.cpp
         src/utils.cpp
         src/SearchCtrl.cpp)

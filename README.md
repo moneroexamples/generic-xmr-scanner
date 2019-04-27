@@ -1,7 +1,6 @@
 ## Generic monero scanner
 
-The project aims to develop generic online  
-scanner/searcher for monero. Its capability includes searching for:
+The project aims to develop generic online scanner/searcher for monero. Its capability includes searching for:
 
  - outputs associated with given address and viewkey,
  - possible spendings based on only address and viewkey,
@@ -61,11 +60,15 @@ Go to `http:/127.0.0.1:9100`
 #### Program options
 
 ```bash
+xmrscanner: generic monero scanner:
+  -h [ --help ]                         Help
+  -n [ --nettype ] arg (=2)             network type: 0-MAINNET, 1-TESTNET, 
+                                        2-STAGENET
+  -b [ --blockchain-path ] arg (=/home/mwo2/.bitmonero/stagenet/lmdb)
+                                        Path to lmdb folder containing the 
+                                        blockchain
+  -p [ --port ] arg (=8848)             Service port
 ```
-
-
-#### Examples 
-
 
 
 ## How can you help?

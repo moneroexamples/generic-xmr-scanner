@@ -48,7 +48,7 @@ https://github.com/moneroexamples/monero-compilation/blob/master/README.md
 #### Project download and compilation
 
 ```bash
-git clone --recursive https://github.com/moneroexamples/generic-xmr-scanner
+git clone --recurse-submodules https://github.com/moneroexamples/generic-xmr-scanner
 
 cd generic-xmr-scanner
 
@@ -70,14 +70,12 @@ The project comes with basic html fronted located in `html` folder. Read more he
 #### Program options
 
 ```bash
-xmrscanner: generic monero scanner:
-  -h [ --help ]                         Help
-  -n [ --nettype ] arg (=2)             network type: 0-MAINNET, 1-TESTNET, 
-                                        2-STAGENET
-  -b [ --blockchain-path ] arg (=/home/mwo2/.bitmonero/stagenet/lmdb)
-                                        Path to lmdb folder containing the 
-                                        blockchain
-  -p [ --port ] arg (=8848)             Service port
+  -h [ --help ]                Help
+  -n [ --nettype ] arg (=2)    network type: 0-MAINNET, 1-TESTNET, 2-STAGENET
+  -b [ --blockchain-path ] arg Non-default path to lmdb folder containing the 
+                               blockchain. Default is ~/.bitmonero/sta
+                               genet/lmdb
+  -p [ --port ] arg (=8848)    Service port
 ```
 
 

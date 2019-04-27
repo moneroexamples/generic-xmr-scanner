@@ -21,12 +21,11 @@ The idea is based on two projects:
 The first project allowed for online identification of outputs 
 associated with given address and viewkey. The second project additionally
 searched for transactions which use the outputs as decoys/ring members. 
-However, the first projct got discontinued, while the second, is a
+However, the first projcet got discontinued, while the second is a
 command-line program which limits its widespread use. 
 
 The generic monero scanner is solution to these issues.
  
-
 ## Technologies
 
 The key technologies used in the scanner are:
@@ -46,16 +45,27 @@ Follow instructions in the following link:
 
 https://github.com/moneroexamples/monero-compilation/blob/master/README.md
 
-#### Html fronted 
-The project comes with basic html fronted located in `html` folder. The easiet
-way to server it over http is to use python's build in http server
+#### Project download and compilation
 
 ```bash
-cd html
-python -m http.server 9100
-```
-Go to `http:/127.0.0.1:9100`
+git clone --recursive https://github.com/moneroexamples/generic-xmr-scanner
 
+cd generic-xmr-scanner
+
+mkdir build && cd build
+
+cmake ..
+
+# altearnatively can use cmake -DMONERO_DIR=/path/to/monero_folder ..
+# if monero is not in ~/monero
+```
+
+Following the compilation, `xmrscanner` executable should be avaliable in the `build` folder. 
+
+#### Html fronted 
+The project comes with basic html fronted located in `html` folder. Read more here: 
+
+- https://github.com/moneroexamples/generic-xmr-scanner/tree/master/html#basic-html-client-for-the-scanner
 
 #### Program options
 

@@ -20,8 +20,15 @@ options["help"] = false;
 options["error"] = false;
 options["nettype"] = network_type::STAGENET;
 
-options["blockchain_path"] = xmreg::get_default_lmdb_folder(
+auto default_blockchain_path = xmreg::get_default_lmdb_folder(
             any_cast<network_type>(options["nettype"]));
+
+options["blockchain_path"] = default_blockchain_path;
+
+string blockchain_path_msg {
+        "Non-default path to lmdb folder " 
+        "containing the blockchain. Default is "
+        + default_blockchain_path};
 
 try
 {
@@ -34,10 +41,8 @@ try
              static_cast<size_t>(
                  any_cast<network_type>(options["nettype"]))),
          "network type: 0-MAINNET, 1-TESTNET, 2-STAGENET")
-        ("blockchain-path,b", po::value<string>()
-            ->default_value(
-             any_cast<string>(options["blockchain_path"])),
-         "Path to lmdb folder containing the blockchain")
+        ("blockchain-path,b", po::value<string>(),
+         blockchain_path_msg.c_str())
         ("port,p", po::value<size_t>()->default_value(8848),
          "Service port");
 
@@ -64,6 +69,8 @@ try
 
     if (vm.count("nettype"))
     {
+        cout << vm["nettype"].as<size_t>() << endl;
+        
         options["nettype"] 
             = static_cast<network_type>(vm["nettype"].as<size_t>());
 

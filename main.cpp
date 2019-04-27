@@ -8,8 +8,6 @@
 #include <boost/fiber/all.hpp> 
 
 #include <iostream>
-#include <filesystem>
-
 
 using namespace xmreg;
 
@@ -30,7 +28,7 @@ if (any_cast<bool>(options["error"])
 
 auto net_type = any_cast<network_type>(
                 options["nettype"]);
-auto blockchain_path = any_cast<std::filesystem::path>(
+auto blockchain_path = any_cast<string>(
                 options["blockchain_path"]);
 auto port = any_cast<size_t>(options["port"]);
 
@@ -42,7 +40,7 @@ mlog_set_log("1");
 // initicalize and create instance of MicroCore
 // which is going to provide direct access to monero
 // blockchain
-auto mcore = MicroCore(blockchain_path.string(), 
+auto mcore = MicroCore(blockchain_path, 
                        net_type);
 
 LOG_INFO << "MicroCore initialized";

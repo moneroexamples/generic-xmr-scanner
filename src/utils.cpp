@@ -4,7 +4,15 @@
 #include <boost/program_options.hpp>
 #include "boost/algorithm/string.hpp"
 
+#if defined(__cpp_lib_filesystem)
 #include <filesystem>
+#else 
+#include <experimental/filesystem>
+namespace std 
+{
+    namespace filesystem = experimental::filesystem;
+}
+#endif
 
 namespace xmreg
 {
@@ -74,9 +82,8 @@ try
         options["nettype"] 
             = static_cast<network_type>(vm["nettype"].as<size_t>());
 
-        options["blockchain_path"] = filesystem::path {
-            xmreg::get_default_lmdb_folder(
-                any_cast<network_type>(options["nettype"]))};
+        options["blockchain_path"] = xmreg::get_default_lmdb_folder(
+                any_cast<network_type>(options["nettype"]));
     }
 
     if (vm.count("blockchain-path"))

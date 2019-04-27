@@ -21,8 +21,8 @@ add_subdirectory(ext/xmregcore)
 set(JSON_BuildTests OFF CACHE INTERNAL "")
 add_subdirectory(ext/nlohmann)
 
-#set(BUILD_CTL FALSE CACHE INTERNAL "")
-#set(BUILD_ORM FALSE CACHE INTERNAL "")
+set(BUILD_CTL FALSE CACHE INTERNAL "")
+set(BUILD_ORM FALSE CACHE INTERNAL "")
 add_subdirectory(ext/drogon)
 
 # this find will just give as interface target

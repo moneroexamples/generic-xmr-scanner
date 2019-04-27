@@ -1,7 +1,7 @@
 ## Basic html client for the scanner
 
 `index.html` contains the most basic html and JavaScript client 
-to interact with the `xmrscanner` over the Internet. The design of the `index.html` was based on the Restbed example code provided [here](https://github.com/Corvusoft/restbed/blob/master/documentation/example/WEB_SOCKET.md#client).
+to interact with the `xmrscanner` over the Internet. The design of the `index.html` was based on the [Restbed](https://github.com/Corvusoft/restbed) example code provided [here](https://github.com/Corvusoft/restbed/blob/master/documentation/example/WEB_SOCKET.md#client).
 
 The easiest way to serve it is to use  python 3's build in `http` server:
 

@@ -48,7 +48,7 @@ https://github.com/moneroexamples/monero-compilation/blob/master/README.md
 #### Project download and compilation
 
 ```bash
-git clone --recursive https://github.com/moneroexamples/generic-xmr-scanner
+git clone --recurse-submodules https://github.com/moneroexamples/generic-xmr-scanner
 
 cd generic-xmr-scanner
 

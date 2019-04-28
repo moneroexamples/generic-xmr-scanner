@@ -7,9 +7,6 @@
 [submodule "ext/googletest"]
 	path = ext/googletest
 	url = https://github.com/google/googletest.git
-[submodule "ext/nlohmann"]
-	path = ext/nlohmann
-	url = https://github.com/nlohmann/json.git
 [submodule "ext/fiberpool"]
 	path = ext/fiberpool
 	url = https://github.com/moneroexamples/fiberpool.git

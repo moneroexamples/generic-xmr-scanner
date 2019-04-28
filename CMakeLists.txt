@@ -18,9 +18,6 @@ list(APPEND CMAKE_MODULE_PATH
 set(BUILD_XMREGCORE_TESTS OFF CACHE INTERNAL "")
 add_subdirectory(ext/xmregcore)
 
-set(JSON_BuildTests OFF CACHE INTERNAL "")
-add_subdirectory(ext/nlohmann)
-
 set(BUILD_CTL FALSE CACHE INTERNAL "")
 set(BUILD_ORM FALSE CACHE INTERNAL "")
 add_subdirectory(ext/drogon)
@@ -28,7 +25,6 @@ add_subdirectory(ext/drogon)
 # this find will just give as interface target
 # Drogon::Drogon
 find_package(Drogon)
-
 
 find_package(Boost REQUIRED
     COMPONENTS fiber)
@@ -39,13 +35,14 @@ add_executable(${PROJECT_NAME}
         src/SearchCtrl.cpp)
 
 target_include_directories(${PROJECT_NAME}
-    PRIVATE ext/fiberpool/include)
+    PRIVATE 
+        ext/fiberpool/include
+        ext/)
 
 target_link_libraries(${PROJECT_NAME}
     PRIVATE 
         XMREG::core 
         Drogon::Drogon  
-        nlohmann_json::nlohmann_json
         Boost::fiber
         stdc++fs)
         

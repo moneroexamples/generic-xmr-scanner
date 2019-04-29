@@ -41,6 +41,7 @@ struct ISearchObserver
 class ISearchTask 
 {                                                                       
 public:                                                                 
+    uint64_t t_no {0};
 
     virtual std::string key() const = 0;
     virtual void operator()() = 0;                                      
@@ -74,7 +75,7 @@ public:
         observers.remove(observer);
     }
 
-    std::vector<nl::json> get_results() 
+    virtual std::vector<nl::json> get_results() 
     {
         return results;
     }

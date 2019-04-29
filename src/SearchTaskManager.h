@@ -19,12 +19,6 @@ namespace xmreg
 
 using namespace std::chrono_literals;
 
-
-class SearchTaskManager
-{
-
-public:
-
 using task_t = std::shared_ptr<ISearchTask>;  
 
 using task_future_t = boost::fibers::future<void>;
@@ -33,142 +27,11 @@ using task_map_t = std::unordered_map<
                             std::string, 
                             std::unique_ptr<ISearchObserver>>;
 
-explicit SearchTaskManager(MicroCore* _mcore)
-    : m_core {_mcore}
-{}
-
-
-/**
- * Checks if tasks already exists. If not creates
- * Task instance, submits it to fiberpool 
- * and registers it with the task manager's m_tasks
- */
-auto push(std::shared_ptr<ISearchTask>&& task, 
-          WebSocketConnectionPtr const& ws_conn)
-{
-    assert(m_core != nullptr);
-
-    task->set_microcore(m_core);
-    
-    auto key = task->key();
-
-    // set message aggragate for the task to use
-    
-    std::lock_guard lk {m_tasks_mtx};
-    
-    // before submitting the task to fiberpool
-    // and registring it with task manager,
-    // check if it already exists
-
-    if (auto existing_it = m_tasks.find(key);
-        existing_it != m_tasks.end())
-    {
-        cerr << "Tasks already exists\n";
-        
-        // task already exists, so return it iterator
-        // and set bool flag as false to indicate that 
-        // it has not been just created.
-        
-        auto existing_task_ptr = static_cast<Task*>(
-                existing_it->second.get());
-
-        existing_task_ptr->add_conn(ws_conn); 
-        
-        return make_tuple(existing_it, false);
-    }
-    
-    // tasks does not exist, so we submit it to fiberpool
-
-    // submit our job to the the pool
-    auto opt_future = DefaultFiberPool::submit_job(
-            [task = task]() 
-            {
-                // capture shared_ptr<task_variant_t> by copy
-                // the fiber should participate in the tasks
-                // lifespan
-                
-                // run the task
-                (*task)();
-            });
-
-    // if submiting task to fiberpool failed, returned
-    if (!opt_future)
-    {
-        return make_tuple(m_tasks.end(), false);
-    }
-
-    // create Task object which will represent the task
-    // in the m_tasks map
-    
-    unique_ptr<ISearchObserver> tsk 
-        = make_unique<Task>(std::move(task),
-                            std::move(*opt_future),
-                            ws_conn);
-
-    // create entry in the task map
-    auto [it, success] = m_tasks.insert(
-               {key, std::move(tsk)}); 
-    
-    return make_tuple(it, success);
-}
-
-/*
- * Removes disconnected connections
- * and tasks from m_tasks if they are done
- * or there are no connections to them
- */
-void clean_up_tasks() 
-{
-    std::lock_guard lk {m_tasks_mtx};
-    
-    std::cout << "running " << m_tasks.size() 
-              << " tasks"   << std::endl;
-
-    for (auto it = m_tasks.cbegin(); it != m_tasks.end();)
-    {
-       auto const& [key, task] = *it;
-        
-       auto task_ptr = static_cast<Task*>(task.get());
-
-       task_ptr->remove_disconnected();
-
-       if (task_ptr->conns.empty())
-       {
-           // if all connection lost to the given task
-           // ask it to finish
-           task_ptr->task->finish();
-       }
-
-        if (auto status = task_ptr->task_future.wait_for(0ms);
-            status == boost::fibers::future_status::ready)
-        {
-            it = m_tasks.erase(it);
-            cout << "deleted key " << key << "from m_tasks" << endl;
-        }
-        else
-        {
-            ++it;
-        }
-    }
-}
-
-
-void managment_loop()
-{
-    for(;;)
-    {
-        clean_up_tasks();
-        boost::this_fiber::sleep_for(5s);
-    }
-}
-
-
-private:
 
 /*
  * Representation of a task in our task_map
- * It will also listen for any search results
- * found
+ * It will also act as observer for any search results
+ * found by the task
  */
 struct Task : public ISearchObserver
 {
@@ -209,16 +72,16 @@ struct Task : public ISearchObserver
     }
 
     /**
-     * Method class each time the task, i.e., source,
+     * This method is called each time the task
      * finds something. This way we are obtaining
      * current search results in real time and 
      * can send them immediently to the client
-     *
      */
     void new_results(ISearchTask* source) override
     {
         static size_t counter {0};
 
+        // get copy of the current results
         auto results = source->get_results();
 
         // sending found results to the client
@@ -227,23 +90,189 @@ struct Task : public ISearchObserver
         for (auto& conn: conns)
         {
              boost::fibers::fiber(
-                   [conn = std::weak_ptr(conn),
-                    jmsgs = results,
-                    counter = counter++]() 
+               [conn = std::weak_ptr(conn),
+                jmsgs = results,
+                counter = counter++]() 
+                {
+                   auto conn_ptr = conn.lock();
+
+                   if (conn_ptr && conn_ptr->connected())
                    {
-                       auto conn_ptr = conn.lock();
-
-                       if (conn_ptr && conn_ptr->connected())
-                       {
-                           nl::json joined {{"msgs", jmsgs}};
-
-                           conn_ptr->send(joined.dump());
-                        }
-                   }).detach();
+                       nl::json joined {{"msgs", jmsgs}};
+                       conn_ptr->send(joined.dump());
+                    }
+                }).detach();
         }
     } 
     
 };
+
+
+
+class SearchTaskManager
+{
+
+public:
+
+explicit SearchTaskManager(MicroCore* _mcore)
+    : m_core {_mcore}
+{}
+
+
+/**
+ * Checks if tasks already exists. If not creates
+ * Task instance, submits it to fiberpool 
+ * and registers it with the task manager's m_tasks
+ */
+auto push(std::shared_ptr<ISearchTask>&& task, 
+          WebSocketConnectionPtr const& ws_conn)
+{
+
+    static size_t task_no {0};
+
+    assert(m_core != nullptr);
+    
+    task->t_no = ++task_no;
+
+    task->set_microcore(m_core);
+    
+    auto key = task->key();
+
+    // set message aggragate for the task to use
+    
+    std::lock_guard lk {m_tasks_mtx};
+    
+    // before submitting the task to fiberpool
+    // and registring it with the task manager,
+    // check if it already exists
+
+    if (auto existing_it = m_tasks.find(key);
+        existing_it != m_tasks.end())
+    {
+        LOG_INFO << "Tasks already exists\n";
+        
+        // task already exists, so return its iterator
+        // and set bool flag as false to indicate that 
+        // it has not been just created.
+        // also ws_conn is added to the tasks's
+        // connections lists, so that the resutls
+        // from the task are also send to the new
+        // connection
+        
+        auto existing_task_ptr = static_cast<Task*>(
+                existing_it->second.get());
+
+        existing_task_ptr->add_conn(ws_conn); 
+        
+        return make_tuple(existing_it, false);
+    }
+    
+    // tasks does not exist, so we submit it to fiberpool
+
+    // submit our job to the the pool
+    auto opt_future = DefaultFiberPool::submit_job(
+            [task = task]() 
+            {
+                // capture shared_ptr of the task by copy
+                // the fiber should participate in the tasks
+                // lifespan
+                
+                // run the task
+                (*task)();
+            });
+
+    // if submiting task to fiberpool failed, returned
+    if (!opt_future)
+    {
+        return make_tuple(m_tasks.end(), false);
+    }
+
+    // create Task object which will represent the task
+    // in the m_tasks map
+    
+    unique_ptr<ISearchObserver> tsk 
+        = make_unique<Task>(std::move(task),
+                            std::move(*opt_future),
+                            ws_conn);
+
+    // create entry in the task map
+    auto [it, success] = m_tasks.insert(
+               {key, std::move(tsk)}); 
+
+    assert(success);
+    
+    return make_tuple(it, success);
+}
+
+/*
+ * Removes disconnected connections
+ * and tasks from m_tasks if they are done
+ * or there are no connections to them
+ */
+void clean_up_tasks() 
+{
+    std::lock_guard lk {m_tasks_mtx};
+    
+    { 
+        ostringstream os;
+
+        os << "running " << m_tasks.size() 
+           << " tasks\n";
+
+        cout << os.str() << flush; 
+    }
+
+    for (auto it = m_tasks.cbegin(); it != m_tasks.end();)
+    {
+       auto const& [key, task] = *it;
+        
+       auto task_ptr = static_cast<Task*>(task.get());
+
+       task_ptr->remove_disconnected();
+
+       if (task_ptr->conns.empty())
+       {
+           // if all connection lost to the given task
+           // ask it to finish
+           task_ptr->task->finish();
+       }
+
+        // check if the task is finished. it can be finished
+        // either because it naturally ended, or an exception
+        // was thrown inside of it 
+        // in either case, we dont care how the task finished
+        // we just remove it from the task map
+        if (auto status = task_ptr->task_future.wait_for(0ms);
+            status == boost::fibers::future_status::ready)
+        {
+            it = m_tasks.erase(it);
+
+            ostringstream os;
+
+            os << "deleted key " << key 
+               << "from m_tasks\n";
+
+            cout << os.str() << flush; 
+        }
+        else
+        {
+            ++it;
+        }
+    }
+}
+
+
+void managment_loop()
+{
+    for(;;)
+    {
+        clean_up_tasks();
+        boost::this_fiber::sleep_for(5s);
+    }
+}
+
+
+private:
 
 mutable boost::fibers::mutex m_tasks_mtx;
 

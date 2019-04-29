@@ -86,6 +86,44 @@
             open();
         });
  }
+ 
+function setup_known_addresses()
+ {
+
+    avaliable_addresses = [
+        {
+            name: "Monero project donation address",
+            address: "44AFFq5kSiGBoZ4NMDwYtN18obc8AemS33DBLWs3H7otXft3XjrpDtQGv7SqSsaBYBb98uNbr2VBBEt7f2wfn3RVGQBEP3A", 
+            viewkey: "f359631075708155cc3d92a32b75a7d02a5dcf27756707b47a2b31b21c389501"
+        },
+        {
+            name: "Monero forum donation address",
+            address: "45ttEikQEZWN1m7VxaVN9rjQkpSdmpGZ82GwUps66neQ1PqbQMno4wMY8F5jiDt2GoHzCtMwa7PDPJUJYb1GYrMP4CwAwNp", 
+            viewkey: "c9347bc1e101eab46d3a6532c5b6066e925f499b47d285d5720e6a6f4cc4350c"
+        }
+    ];
+
+
+    var known_address = document.getElementById("known-address");
+
+    var address = document.getElementById("address");
+    var viewkey = document.getElementById("viewkey");
+            
+    var selected_value = known_address.value - 1;
+
+    address.value = avaliable_addresses[selected_value].address;   
+    viewkey.value = avaliable_addresses[selected_value].viewkey;   
+        
+    known_address.addEventListener("change",
+        function(evt) 
+        {
+            var selected_value = known_address.value - 1;
+
+            address.value = avaliable_addresses[selected_value].address;   
+            viewkey.value = avaliable_addresses[selected_value].viewkey;   
+
+        });
+ }
 
   function open()
   {
@@ -113,8 +151,17 @@
 
         ws.onmessage = function(evt)
         {
+           var results = "";
 
-           var results =  JSON.parse(evt.data); 
+            try 
+            {
+                results = JSON.parse(evt.data); 
+            } 
+            catch(e)
+            {
+                console.log("cant parson json: ", evt.data);
+                return;
+            }
             
            var status_info = document.getElementById("status-info");
 
@@ -149,9 +196,6 @@
             });
 
             console.log(results);
-
-           //add_message(evt.data);
-           
         };
 
         ws.onclose = function(evt)
@@ -176,6 +220,7 @@
   {
     window.restbed = { ws: null };
     setup_submit_btn();
+    setup_known_addresses()
   })();
 </script>
 </body>

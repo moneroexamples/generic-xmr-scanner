@@ -35,7 +35,9 @@ to_json(nl::json& j, Output::info const& info)
 
 class OutputSearchTask:  public ISearchTask 
 {
+
 public:
+
 
 OutputSearchTask(unique_ptr<Account> _acc,
                 size_t _timespan = 1)
@@ -48,7 +50,7 @@ OutputSearchTask(unique_ptr<Account> _acc,
 
 std::string key() const override 
 {
-    return m_address + m_viewkey;
+    return std::to_string(t_no) + "_" + m_address + m_viewkey;
 }
 
 
@@ -58,17 +60,15 @@ void operator()() override
 
     auto last_block_height = current_height(); 
 
-    uint64_t blocks_lookahead = 1000;
+    uint64_t blocks_lookahead = 10;
 
-    auto searched_blk_no = last_block_height - 18000;
+    auto searched_blk_no = last_block_height - 1000;
 
     auto addr = m_acc->ai();
     auto vk   = m_acc->vk().value();
 
     while(!m_should_finish)
     {
-        boost::this_fiber::yield();
-
         last_block_height = current_height();
 
         uint64_t h1 = searched_blk_no;
@@ -83,7 +83,8 @@ void operator()() override
         }
         catch (std::exception const& e)
         {
-            cerr << e.what() << endl;
+            LOG_WARN << "m_core->get_blocks_range(h1, h2): " 
+                      << e.what();
             break;
         }
 
@@ -95,29 +96,30 @@ void operator()() override
         {
             ostringstream os;
 
-            os  << m_address.substr(0,6) << " " 
+            os  << key().substr(0, 6) << " " 
                   << blocks.size() << " blocks from "
                   << h1 << " to " << h2
                   << " out of " << last_block_height 
                   << " blocks\n";
 
-            //cout << os.str();
+            cout << os.str();
 
             auto msg = jb().success(
                         {{"progress", 
                          {
                            {"current_block", h1},
-                           {"blockchain_height", last_block_height}
+                           {"blockchain_height", 
+                                last_block_height}
                          }
                         }});
 
-            //results.push_back(std::move(msg));
+            results.push_back(std::move(msg));
         }
+        
+        //continue;
 
         for (auto const& blk: blocks)
         {
-            //boost::this_fiber::yield();
-
             vector<transaction> txs;
 
             txs.reserve(blk.tx_hashes.size() 
@@ -134,6 +136,8 @@ void operator()() override
 
             for (auto const& tx: txs)
             {
+                boost::this_fiber::yield();
+
                 auto identifier = make_identifier(tx,
                                     make_unique<Output>(
                                         &addr, &vk));

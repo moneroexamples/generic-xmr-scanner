@@ -31,7 +31,7 @@ The generic monero scanner is solution to these issues.
 The key technologies used in the scanner are:
 
  - C++17
- - websockets - support porovided by [drogon](https://github.com/an-tao/drogon)
+ - websockets - support provided by [drogon](https://github.com/an-tao/drogon)
  - [FiberPool](https://github.com/moneroexamples/fiberpool) - single-file header-only C++17 boost::fiber thread pool library 
  - [xmregcore](https://github.com/moneroexamples/xmregcore) - modular Universal Identifier and Account representation for monero.
  - googletest - unit testing and mocking framework

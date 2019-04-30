@@ -59,16 +59,11 @@ if (fiberpool_threads_no == 0)
     fiberpool_threads_no = no_of_defualt_threads();
 }
 
-// minimum number of theards for work_stealing FiberPool
-// scheduling algorithm is 2.
-//fiberpool_threads_no = std::max<size_t>(
-//                        fiberpool_threads_no, 2u);
-
 LOG_INFO << "FiberPool will use " << fiberpool_threads_no 
          << " thread workers";
 
-FiberPoolStealing<> fiber_pool(fiberpool_threads_no);
-//FiberPoolSharing<> fiber_pool(fiberpool_threads_no);
+//FiberPoolStealing<> fiber_pool(fiberpool_threads_no);
+FiberPoolSharing<> fiber_pool(fiberpool_threads_no);
 
 // will manage and keep track of all search tasks submitted 
 // to our service  this is main scope variable. so we are just

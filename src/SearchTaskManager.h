@@ -116,7 +116,7 @@ public:
 
 explicit SearchTaskManager
     (MicroCore* _mcore, 
-     FiberPool::FiberPoolStealing<>* _fpool)
+     FiberPool::FiberPoolSharing<>* _fpool)
     : m_core {_mcore}, m_fpool {_fpool}
 {}
 
@@ -308,10 +308,11 @@ task_map_t m_tasks;
 
 MicroCore const* m_core {nullptr}; 
      
-FiberPool::FiberPoolStealing<>* m_fpool {nullptr};
-//FiberPool::FiberPoolSharing<>* m_fpool {nullptr};
+//FiberPool::FiberPoolStealing<>* m_fpool {nullptr};
+FiberPool::FiberPoolSharing<>* m_fpool {nullptr};
 
 };
 }
 
 #endif
+

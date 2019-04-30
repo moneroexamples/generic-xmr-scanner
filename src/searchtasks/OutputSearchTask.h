@@ -50,7 +50,8 @@ OutputSearchTask(unique_ptr<Account> _acc,
 
 std::string key() const override 
 {
-    return std::to_string(t_no) + "_" + m_address + m_viewkey;
+    //return std::to_string(t_no) + "_" + m_address + m_viewkey;
+    return m_address + m_viewkey;
 }
 
 
@@ -62,7 +63,7 @@ void operator()() override
 
     uint64_t blocks_lookahead = 10;
 
-    auto searched_blk_no = last_block_height - 1000;
+    auto searched_blk_no = last_block_height - 5000;
 
     auto addr = m_acc->ai();
     auto vk   = m_acc->vk().value();
@@ -116,7 +117,7 @@ void operator()() override
                   << " out of " << last_block_height 
                   << " blocks\n";
 
-            cout << os.str();
+            //cout << os.str();
 
             auto msg = jb().success(
                         {{"progress", 
@@ -184,7 +185,7 @@ void operator()() override
                            << " switched thread to " 
                            << my_thread << '\n';
 
-                    std::cout << buffer.str() << std::flush;
+                    //std::cout << buffer.str() << std::flush;
                  }
 
                 auto identifier = make_identifier(tx,

@@ -114,8 +114,10 @@ class SearchTaskManager
 
 public:
 
-explicit SearchTaskManager(MicroCore* _mcore)
-    : m_core {_mcore}
+explicit SearchTaskManager
+    (MicroCore* _mcore, 
+     FiberPool::FiberPoolStealing<>* _fpool)
+    : m_core {_mcore}, m_fpool {_fpool}
 {}
 
 
@@ -170,7 +172,7 @@ auto push(std::shared_ptr<ISearchTask>&& task,
     // tasks does not exist, so we submit it to fiberpool
 
     // submit our job to the the pool
-    auto opt_future = DefaultFiberPool::submit_job(
+    auto opt_future = m_fpool->submit(
             [task = task]() 
             {
                 // capture shared_ptr of the task by copy
@@ -247,12 +249,12 @@ void clean_up_tasks()
         {
             it = m_tasks.erase(it);
 
-            ostringstream os;
+            //ostringstream os;
 
-            os << "deleted key " << key 
-               << "from m_tasks\n";
+            //os << "deleted key " << key 
+            //   << "from m_tasks\n";
 
-            cout << os.str() << flush; 
+            //cout << os.str() << flush; 
         }
         else
         {
@@ -264,10 +266,36 @@ void clean_up_tasks()
 
 void managment_loop()
 {
+    std::thread::id my_thread = std::this_thread::get_id(); 
+
+    {
+        std::ostringstream buffer;
+
+        buffer << "managment_loop is on thread " 
+               << my_thread << '\n';
+
+        std::cout << buffer.str() << std::flush;
+    }
+
     for(;;)
     {
         clean_up_tasks();
         boost::this_fiber::sleep_for(5s);
+        std::thread::id new_thread 
+            = std::this_thread::get_id();
+
+         if (new_thread != my_thread) 
+         {
+            my_thread = new_thread;
+
+            std::ostringstream buffer;
+
+            buffer << " managment_loop switched to thread " 
+                   << my_thread << '\n';
+
+            std::cout << buffer.str() << std::flush;
+         }
+
     }
 }
 
@@ -279,6 +307,9 @@ mutable boost::fibers::mutex m_tasks_mtx;
 task_map_t m_tasks;
 
 MicroCore const* m_core {nullptr}; 
+     
+FiberPool::FiberPoolStealing<>* m_fpool {nullptr};
+//FiberPool::FiberPoolSharing<>* m_fpool {nullptr};
 
 };
 }

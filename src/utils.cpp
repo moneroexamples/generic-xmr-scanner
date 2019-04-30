@@ -51,6 +51,10 @@ try
          "network type: 0-MAINNET, 1-TESTNET, 2-STAGENET")
         ("blockchain-path,b", po::value<string>(),
          blockchain_path_msg.c_str())
+        ("fiberthreads,f",
+             po::value<size_t>()->default_value(0),
+         "Number of fiberpool thread worksers. "
+         "Default is 0 - based on hardware")
         ("port,p", po::value<size_t>()->default_value(8848),
          "Service port");
 
@@ -91,6 +95,7 @@ try
                 = filesystem::path {vm["blockchain-path"].as<string>()};
     
     options["port"] = vm["port"].as<size_t>();
+    options["fiberpool_threads"] = vm["fiberthreads"].as<size_t>();
 }
 catch (po::error const& ex)
 {

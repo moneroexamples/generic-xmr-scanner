@@ -67,8 +67,22 @@ void operator()() override
     auto addr = m_acc->ai();
     auto vk   = m_acc->vk().value();
 
+    std::thread::id my_thread = std::this_thread::get_id(); 
+
+    {
+        std::ostringstream buffer;
+
+        buffer << key().substr(0, 6) 
+               << " is on thread " 
+               << my_thread << '\n';
+
+        std::cout << buffer.str() << std::flush;
+    }
+
+
     while(!m_should_finish)
     {
+
         last_block_height = current_height();
 
         uint64_t h1 = searched_blk_no;
@@ -120,6 +134,24 @@ void operator()() override
 
         for (auto const& blk: blocks)
         {
+                //boost::this_fiber::sleep_for(0ms);
+
+                //std::thread::id new_thread 
+                    //= std::this_thread::get_id();
+
+                 //if (new_thread != my_thread) 
+                 //{
+                    //my_thread = new_thread;
+
+                    //std::ostringstream buffer;
+
+                    //buffer << key().substr(0, 6) 
+                           //<< " switched thread to " 
+                           //<< my_thread << '\n';
+
+                    ////std::cout << buffer.str() << std::flush;
+                 //}
+
             vector<transaction> txs;
 
             txs.reserve(blk.tx_hashes.size() 
@@ -136,7 +168,24 @@ void operator()() override
 
             for (auto const& tx: txs)
             {
-                boost::this_fiber::yield();
+                //boost::this_fiber::yield();
+                boost::this_fiber::sleep_for(0ms);
+
+                std::thread::id new_thread 
+                    = std::this_thread::get_id();
+
+                 if (new_thread != my_thread) 
+                 {
+                    my_thread = new_thread;
+
+                    std::ostringstream buffer;
+
+                    buffer << key().substr(0, 6) 
+                           << " switched thread to " 
+                           << my_thread << '\n';
+
+                    std::cout << buffer.str() << std::flush;
+                 }
 
                 auto identifier = make_identifier(tx,
                                     make_unique<Output>(
@@ -170,52 +219,52 @@ void operator()() override
 
     {
         std::ostringstream buffer;
-        buffer<< m_address << " search_task finished\n";
+        buffer<< key().substr(0, 6) << " finished\n";
         std::cout << buffer.str() << std::flush;
-		
-		nl::json msg {{"found: ", buffer.str()}};
+        
+        nl::json msg {{"found: ", buffer.str()}};
         results.push_back(std::move(msg));
         notify(this);
     }
 }
 
 /*
- * Factory method to construct the task's
- * object
- */
+* Factory method to construct the task's
+* object
+*/
 static unique_ptr<OutputSearchTask> 
 create(nl::json const& in_data)
 {
-     string address;
-     string viewkey;
-     size_t timespan;
+ string address;
+ string viewkey;
+ size_t timespan;
 
-     try 
-     {
-          address = in_data["address"]; 
-          viewkey = in_data["viewkey"];
-          timespan = std::atoi(in_data["timespan"]
-                               .get<string>().c_str());
+ try 
+ {
+      address = in_data["address"]; 
+      viewkey = in_data["viewkey"];
+      timespan = std::atoi(in_data["timespan"]
+                           .get<string>().c_str());
 
-          auto acc = account_factory(address, viewkey);
+      auto acc = account_factory(address, viewkey);
 
-          if (!acc)
-          {
-              LOG_DEBUG << "Failed to parse address/viewkey";
-              return nullptr;
-          }
-     
-          auto task = make_unique<OutputSearchTask>(
-                 std::move(acc), timespan);
+      if (!acc)
+      {
+          LOG_DEBUG << "Failed to parse address/viewkey";
+          return nullptr;
+      }
+ 
+      auto task = make_unique<OutputSearchTask>(
+             std::move(acc), timespan);
 
-          return task;
-     }
-     catch (std::exception const& e)
-     {
-         LOG_DEBUG << e.what();
-     }
+      return task;
+ }
+ catch (std::exception const& e)
+ {
+     LOG_DEBUG << e.what();
+ }
 
-     return nullptr;
+ return nullptr;
 }
 
 protected:

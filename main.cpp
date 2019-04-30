@@ -9,6 +9,7 @@
 
 #include <iostream>
 
+using namespace FiberPool;
 using namespace xmreg;
 
 using namespace cryptonote;
@@ -31,6 +32,8 @@ auto net_type = any_cast<network_type>(
 auto blockchain_path = any_cast<string>(
                 options["blockchain_path"]);
 auto port = any_cast<size_t>(options["port"]);
+auto fiberpool_threads_no = any_cast<size_t>(
+            options["fiberpool_threads"]);
 
 // setup monero's own logger
 mlog_configure(mlog_get_default_log_path(""), true);
@@ -51,18 +54,33 @@ auto current_height = mcore.get_core()
 LOG_INFO << "Current blockchain height: " 
          << current_height;
 
+if (fiberpool_threads_no == 0)
+{
+    fiberpool_threads_no = no_of_defualt_threads();
+}
+
+// minimum number of theards for work_stealing FiberPool
+// scheduling algorithm is 2.
+//fiberpool_threads_no = std::max<size_t>(
+//                        fiberpool_threads_no, 2u);
+
+LOG_INFO << "FiberPool will use " << fiberpool_threads_no 
+         << " thread workers";
+
+FiberPoolStealing<> fiber_pool(fiberpool_threads_no);
+//FiberPoolSharing<> fiber_pool(fiberpool_threads_no);
+
 // will manage and keep track of all search tasks submitted 
 // to our service  this is main scope variable. so we are just
 // going to keep passing  NON-OWNING raw pointer to it 
 // into services that need to use it
-auto task_manager = SearchTaskManager(&mcore);
+auto task_manager = SearchTaskManager(&mcore, &fiber_pool);
 
 // start search tasks management loop. It mostly just
 // checks periodically for finished tasks and lost
 // websockets coonections. 
-DefaultFiberPool::submit_job
-                   (&SearchTaskManager::managment_loop, 
-                    &task_manager);
+fiber_pool.submit(&SearchTaskManager::managment_loop, 
+                  &task_manager);
 
 
 LOG_INFO << "SearchTaskManager loop started";

@@ -184,7 +184,7 @@ void operator()() override
                            << " switched thread to " 
                            << my_thread << '\n';
 
-                    std::cout << buffer.str() << std::flush;
+                    //std::cout << buffer.str() << std::flush;
                  }
 
                 auto identifier = make_identifier(tx,

@@ -6,6 +6,7 @@
 *.user.*
 .idea/
 *.gcov
+*.orig
 cmake-build-debug/
 ext/restbed/dependency/catch/
 ext/restbed/distribution/

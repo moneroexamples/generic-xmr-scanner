@@ -54,15 +54,10 @@ public:
 
     void notify(ISearchTask* source) 
     {
-        if (results.empty())
-            return;
-
         for (auto& obs: observers)
         {
             obs->new_results(source);
         }
-
-        results.clear();
     }
 
     void subscribe(ISearchObserver* observer)
@@ -75,9 +70,14 @@ public:
         observers.remove(observer);
     }
 
-    virtual std::vector<nl::json> get_results() 
+    
+    auto get_results(size_t msg_idx) 
     {
-        return results;
+        //std::lock_guard lk {m_mtx_results};
+        return make_pair(
+                current_progress,
+                std::vector(results.begin() + msg_idx, 
+                    results.end()));
     }
 
     void set_microcore(MicroCore const* _mcore) 
@@ -96,7 +96,10 @@ protected:
     boost::fibers::mutex m_mtx;
     bool m_should_finish {false};
 
+    
+    boost::fibers::mutex m_mtx_results;
     std::vector<nl::json> results;
+    nl::json current_progress;
 
     // holds pointers to any objects which wants
     // to be notified each time the search task

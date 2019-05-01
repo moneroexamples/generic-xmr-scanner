@@ -50,7 +50,8 @@ OutputSearchTask(unique_ptr<Account> _acc,
 
 std::string key() const override 
 {
-    return std::to_string(t_no) + "_" + m_address + m_viewkey;
+    //return std::to_string(t_no) + "_" + m_address + m_viewkey;
+    return m_address + m_viewkey;
 }
 
 
@@ -62,7 +63,7 @@ void operator()() override
 
     uint64_t blocks_lookahead = 10;
 
-    auto searched_blk_no = last_block_height - 1000;
+    auto searched_blk_no = last_block_height - 10000;
 
     auto addr = m_acc->ai();
     auto vk   = m_acc->vk().value();
@@ -118,7 +119,9 @@ void operator()() override
 
             cout << os.str();
 
-            auto msg = jb().success(
+            //std::lock_guard lk {m_mtx_results};
+
+            current_progress = jb().success(
                         {{"progress", 
                          {
                            {"current_block", h1},
@@ -126,31 +129,14 @@ void operator()() override
                                 last_block_height}
                          }
                         }});
-
-            results.push_back(std::move(msg));
+            
+            notify(this);
         }
-        
-        //continue;
 
-        for (auto const& blk: blocks)
+        //for (auto const& blk: blocks)
+        for (uint64_t i {0}; i < blocks.size(); ++i)
         {
-                //boost::this_fiber::sleep_for(0ms);
-
-                //std::thread::id new_thread 
-                    //= std::this_thread::get_id();
-
-                 //if (new_thread != my_thread) 
-                 //{
-                    //my_thread = new_thread;
-
-                    //std::ostringstream buffer;
-
-                    //buffer << key().substr(0, 6) 
-                           //<< " switched thread to " 
-                           //<< my_thread << '\n';
-
-                    ////std::cout << buffer.str() << std::flush;
-                 //}
+            auto const& blk = blocks[i];
 
             vector<transaction> txs;
 
@@ -202,17 +188,21 @@ void operator()() override
 
                     auto msg = jb().success(
                                 {
+                                  {"block", h1 + i},
+                                  {"timestamp", blk.timestamp},
                                   {"tx", tx_hash},
                                   {"outputs", outputs_found}
                                 });
 
+                    //std::lock_guard lk {m_mtx_results};
+
                     results.push_back(std::move(msg));
+        
+                    notify(this);
                 }
             }
         }
         
-        notify(this);
-
         searched_blk_no = h2 + 1;
     }
 

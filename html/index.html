@@ -18,11 +18,11 @@
        <fieldset id="forms_input">
             <legend>Scan for outputs with and address and viewkey</legend>
          <p>
-		    <label for="known-address">Popular addresses</label>
+		    <label for="known-address">Public addresses</label>
 			<select id="known-address">
               <optgroup label="Use one of the publicly avaliable addresses">
-                <option selected="selected" value="1">Monero donation</option>
-                <option value="2">Monero forum</option>
+                <option selected="selected" value="1">Monero project donation</option>
+                <option value="2">Community Crowdfunding System forum</option>
               </optgroup>
 		    </select>
          </p>
@@ -54,6 +54,21 @@
   <div class="row">
       <ul id="messages"></ul>
   </div>
+
+  <table id="outputs-table">
+    <caption>Output scanning results</caption>
+    <thead>
+      <tr>
+        <th>Block Height</th>
+        <th>Timestamp</th>
+        <th>Output Public Key</th>
+        <th>Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+
  </div>
 
 <script type="text/javascript">
@@ -162,7 +177,7 @@ function setup_known_addresses()
                 console.log("cant parson json: ", evt.data);
                 return;
             }
-            
+
            var status_info = document.getElementById("status-info");
 
             results["msgs"].forEach(function(msg)
@@ -183,19 +198,38 @@ function setup_known_addresses()
 
                if ("outputs" in data)
                {
+                   var outputs_table = document.getElementById("outputs-table");
+
+                   var blk_number    = data["block"];
+                   var blk_timestamp = data["timestamp"];
+
                    for (var i = 0; i < data["outputs"].length; i++)
                    {
                        var output = data["outputs"][i];
+
                        var amount = BigNumber(output["amount"]);
                        var to_show = output.public_key + ", " + amount.toString();
-                       add_message(to_show);
+                       //add_message(to_show);
+
+                       var new_row = outputs_table.insertRow(-1);
+
+                       var blk = new_row.insertCell(0);
+                       var timestamp = new_row.insertCell(1);
+                       var public_key= new_row.insertCell(2);
+                       var amountt = new_row.insertCell(3);
+                       
+                       blk.innerHTML        = blk_number;
+                       timestamp.innerHTML  = blk_timestamp;
+                       public_key.innerHTML = output.public_key;
+                       amountt.innerHTML = amount.dividedBy(1e12).toString();
+
                    }
 
                    return;
                }
             });
 
-            console.log(results);
+           // console.log(results);
         };
 
         ws.onclose = function(evt)

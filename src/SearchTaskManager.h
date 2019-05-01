@@ -37,21 +37,24 @@ struct Task : public ISearchObserver
 {
     task_t task;
     task_future_t task_future;
-    set<WebSocketConnectionPtr> conns;
+    
+    list<std::pair<WebSocketConnectionPtr, 
+                  size_t /* last index of message sent */
+                      >> conns;
 
     explicit Task(task_t&& _task,
                   task_future_t&& _task_future,
                   WebSocketConnectionPtr _conn)
         : task {std::move(_task)},
           task_future {std::move(_task_future)},
-          conns {std::move(_conn)}
+          conns {make_pair(std::move(_conn), 0)}
     {
         task->subscribe(this);
     }
 
     void add_conn(WebSocketConnectionPtr _conn)
     {
-        conns.insert(std::move(_conn));
+        conns.push_back(make_pair(std::move(_conn),0));
     }
 
     void remove_disconnected() 
@@ -59,7 +62,9 @@ struct Task : public ISearchObserver
         for (auto it = conns.cbegin();
                 it != conns.end();)
         {
-            if ((*it)->disconnected())
+            auto& [conn, msg_idx] = *it;
+
+            if (conn->disconnected())
             {
                 it = conns.erase(it);
                 cout << "removing disconneced conn" << endl;
@@ -81,17 +86,29 @@ struct Task : public ISearchObserver
     {
         static size_t counter {0};
 
-        // get copy of the current results
-        auto results = source->get_results();
-
         // sending found results to the client
-        // this is async call, we dont care about 
-        // its outcome/future, exceptions throw. 
-        for (auto& conn: conns)
+        for (auto& [conn, msg_idx]: conns)
         {
-             boost::fibers::fiber(
+            // get copy of the current progress results starting
+            // from the given msg_idx
+            auto [progress, results] = source->get_results(msg_idx);
+             
+            // update msg index
+            msg_idx += results.size(); 
+
+            // append progress to results. results could be 
+            // empty, thus we are just going to report 
+            // current progress of the search
+            results.push_back(std::move(progress));
+
+            // send out the results/progress to the clients
+            // using fiber. We dont check if the send was successful
+            // or thrown exception. Just dispatch the fiber
+            // hopeing that the results/progress messages
+            // will get delivered to the clients 
+            boost::fibers::fiber(
                [conn = std::weak_ptr(conn),
-                jmsgs = results,
+                jmsgs = std::move(results),
                 counter = counter++]() 
                 {
                    auto conn_ptr = conn.lock();
@@ -100,7 +117,7 @@ struct Task : public ISearchObserver
                    {
                        nl::json joined {{"msgs", jmsgs}};
                        conn_ptr->send(joined.dump());
-                    }
+                   }
                 }).detach();
         }
     } 

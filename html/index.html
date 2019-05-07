@@ -3,7 +3,7 @@
   <head>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
     <meta content="utf-8" http-equiv="encoding">
-    <link rel="stylesheet" href="https://unpkg.com/chota">
+    <link rel="stylesheet" href="css/chota.css">
     <script src='js/bignumber.min.js'></script>
   </head>
 <body>
@@ -16,13 +16,13 @@
      </div>
      <form>
        <fieldset id="forms_input">
-            <legend>Scan for outputs with and address and viewkey</legend>
+            <legend>Scan for outputs with address and its viewkey</legend>
          <p>
 		    <label for="known-address">Public addresses</label>
 			<select id="known-address">
               <optgroup label="Use one of the publicly avaliable addresses">
                 <option selected="selected" value="1">Monero project donation</option>
-                <option value="2">Community Crowdfunding System forum</option>
+                <option value="2">Monero community crowdfunding system forum</option>
                 <option value="3">Monerujo donation</option>
               </optgroup>
 		    </select>
@@ -33,7 +33,7 @@
          </p>
          <p>
 			<label for="viewkey">Viewkey</label>
-            <input id="viewkey" type="text"i value="b45e6f38b2cd1c667459527decb438cdeadf9c64d93c8bccf40a9bf98943dc09"/>
+            <input id="viewkey" type="text" value="b45e6f38b2cd1c667459527decb438cdeadf9c64d93c8bccf40a9bf98943dc09"/>
          <p>
 		<p>
 	   <label for="timespan">Start scannig from</label>
@@ -46,7 +46,9 @@
 		</select>
         </p>
         <p>
-        <button class="col-4" id="submit-btn" type="button">Search</button>
+        <label for="skip-coinbase"></label>
+        <input id="skip-conibase" name="checkbox" type="checkbox" checked="checked"> Skip coinbase transactions (faster scanning)
+        <button class="pull-right" id="submit-btn" type="button">Search</button>
 		</p>
        </fieldset>
      </form>
@@ -94,7 +96,7 @@
         function(evt) 
         {
             if ( window.restbed.ws !== null 
-                    && window.restbed.ws.readyState === window.restbed.ws.OPEN ) 
+                    && window.restbed.ws.readyState === window.restbed.ws.OPEN) 
             {
                 window.restbed.ws.close();
             }
@@ -159,11 +161,13 @@ function setup_known_addresses()
             var address = document.getElementById("address").value;
             var viewkey = document.getElementById("viewkey").value;
             var timespan = document.getElementById("timespan").value;
+            var skip_coinbase = document.getElementById("skip-coinbase").checked;
 
             var message = {"scanner": "outputs",
                            "address": address, 
                            "viewkey": viewkey,
-                           "timespan": timespan};
+                           "timespan": timespan,
+                           "coinbase": skip_coinbase};
 
             add_message("submitting address and viewkey to the server");
     

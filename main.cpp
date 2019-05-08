@@ -39,8 +39,7 @@ auto fiberpool_threads_no = any_cast<size_t>(
 mlog_configure(mlog_get_default_log_path(""), true);
 mlog_set_log("1");
 
-
-// initicalize and create instance of MicroCore
+// initialize and create instance of MicroCore
 // which is going to provide direct access to monero
 // blockchain
 auto mcore = MicroCore(blockchain_path, 
@@ -62,13 +61,16 @@ if (fiberpool_threads_no == 0)
 LOG_INFO << "FiberPool will use " << fiberpool_threads_no 
          << " thread workers";
 
-//FiberPoolStealing<> fiber_pool(fiberpool_threads_no);
+// create FiberPool which uses work_sharing scheduler
+// to manage fibers. all tasks submitted to the scanner
+// will run as fibers in the pool.
 FiberPoolSharing<> fiber_pool(fiberpool_threads_no);
 
-// will manage and keep track of all search tasks submitted 
-// to our service  this is main scope variable. so we are just
-// going to keep passing  NON-OWNING raw pointer to it 
-// into services that need to use it
+// the manager will keep track of all search tasks submitted 
+// to our service. This is main scope variable, so we are just
+// going to keep passing NON-OWNING raw pointer to it 
+// into services that need to use it. 
+// Basically any raw pointer is NON-OWNING!
 auto task_manager = SearchTaskManager(&mcore, &fiber_pool);
 
 // start search tasks management loop. It mostly just
@@ -76,7 +78,6 @@ auto task_manager = SearchTaskManager(&mcore, &fiber_pool);
 // websockets coonections. 
 fiber_pool.submit(&SearchTaskManager::managment_loop, 
                   &task_manager);
-
 
 LOG_INFO << "SearchTaskManager loop started";
 
@@ -88,7 +89,6 @@ app().registerController(t);
 
 LOG_INFO << "SearchWebSocketCtrl registered";
 
-
 LOG_INFO << "Listening at 127.0.0.1:" << port;
 
 app().setThreadNum(1);
@@ -96,7 +96,6 @@ app().setIdleConnectionTimeout(1h);
 app().addListener("127.0.0.1", port);
 
 app().run();
-
 
 return EXIT_SUCCESS;
 }

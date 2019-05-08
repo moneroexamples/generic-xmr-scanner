@@ -40,9 +40,11 @@ public:
 
 
 OutputSearchTask(unique_ptr<Account> _acc,
-                size_t _timespan = 1)
+                size_t _no_of_blocks = 720,
+                bool _skip_coinbase = true)
     : m_acc {std::move(_acc)},
-      m_timespan {_timespan} 
+      m_blocks_no {_no_of_blocks},
+      m_skip_coinbase {_skip_coinbase} 
 {
     m_address = m_acc->ai2str();
     m_viewkey = m_acc->vk2str();
@@ -63,7 +65,7 @@ void operator()() override
 
     uint64_t blocks_lookahead = 10;
 
-    auto searched_blk_no = last_block_height - 10000;
+    auto searched_blk_no = last_block_height - m_blocks_no;
 
     auto addr = m_acc->ai();
     auto vk   = m_acc->vk().value();
@@ -150,7 +152,8 @@ void operator()() override
 
             (void) missed_txs;
 
-            txs.push_back(blk.miner_tx);
+            if (!m_skip_coinbase)
+                txs.push_back(blk.miner_tx);
 
             for (auto const& tx: txs)
             {
@@ -235,6 +238,16 @@ create(nl::json const& in_data)
       viewkey = in_data["viewkey"];
       timespan = std::atoi(in_data["timespan"]
                            .get<string>().c_str());
+        
+      uint64_t no_of_past_blocks {720}; // about 1 day
+
+      switch(timespan)
+      {
+          case 1: {no_of_past_blocks = 720; break;}
+          case 2: {no_of_past_blocks = 7*720; break;}
+          case 3: {no_of_past_blocks = 14*720; break;}
+          case 4: {no_of_past_blocks = 30*720; break;}
+      }
 
       auto acc = account_factory(address, viewkey);
 
@@ -245,7 +258,7 @@ create(nl::json const& in_data)
       }
  
       auto task = make_unique<OutputSearchTask>(
-             std::move(acc), timespan);
+             std::move(acc), no_of_past_blocks);
 
       return task;
  }
@@ -260,7 +273,9 @@ create(nl::json const& in_data)
 protected:
 
 unique_ptr<Account> m_acc; 
-size_t m_timespan {1};
+size_t m_blocks_no {720};
+bool m_skip_coinbase {true};
+
 string m_address;
 string m_viewkey;
 };

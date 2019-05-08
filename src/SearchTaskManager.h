@@ -307,7 +307,7 @@ void managment_loop()
 
             std::ostringstream buffer;
 
-            buffer << " managment_loop switched to thread " 
+            buffer << "managment_loop switched to thread " 
                    << my_thread << '\n';
 
             std::cout << buffer.str() << std::flush;

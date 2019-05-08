@@ -41,13 +41,14 @@
 		  <optgroup label="Since when?">
 			<option selected="selected" value="1">One day ago</option>
 			<option value="2">One week ago</option>
-			<option value="3">One month ago</option>
+			<option value="3">Two weeks ago</option>
+			<option value="4">One month ago</option>
 		  </optgroup>
 		</select>
         </p>
         <p>
         <label for="skip-coinbase"></label>
-        <input id="skip-conibase" name="checkbox" type="checkbox" checked="checked"> Skip coinbase transactions (faster scanning)
+        <input id="skip-coinbase" name="checkbox" type="checkbox" checked="checked">Skip coinbase transactions (faster scanning)
         <button class="pull-right" id="submit-btn" type="button">Search</button>
 		</p>
        </fieldset>
@@ -200,9 +201,11 @@ function setup_known_addresses()
                if ("progress" in data)
                {
                     var current_block = data["progress"]["current_block"];
-                    var blockchain_height = data["progress"]["blockchain_height"];
+                    var blockchain_height 
+                       = data["progress"]["blockchain_height"];
 
-                    status_info.innerHTML = current_block + "/" + blockchain_height;
+                    status_info.innerHTML = current_block 
+                                    + "/" + blockchain_height;
                     return;
                }
 
@@ -211,14 +214,16 @@ function setup_known_addresses()
                    var outputs_table = document.getElementById("outputs-table");
 
                    var blk_number    = data["block"];
-                   var blk_timestamp = data["timestamp"];
+                   var blk_timestamp = new Date(data["timestamp"]*1000)
+                                                .toUTCString();
 
                    for (var i = 0; i < data["outputs"].length; i++)
                    {
                        var output = data["outputs"][i];
 
                        var amount = BigNumber(output["amount"]);
-                       var to_show = output.public_key + ", " + amount.toString();
+                       var to_show = output.public_key 
+                            + ", " + amount.toString();
                        //add_message(to_show);
 
                        var new_row = outputs_table.insertRow(-1);
@@ -232,7 +237,6 @@ function setup_known_addresses()
                        timestamp.innerHTML  = blk_timestamp;
                        public_key.innerHTML = output.public_key;
                        amountt.innerHTML = amount.dividedBy(1e12).toString();
-
                    }
 
                    return;

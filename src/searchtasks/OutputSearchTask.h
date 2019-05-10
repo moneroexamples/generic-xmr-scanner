@@ -27,9 +27,21 @@ inline void
 to_json(nl::json& j, Output::info const& info)
 {
 
+    string subaddr_idx {"N/A"};
+
+
+    if (info.has_subaddress_index())
+    {
+        subaddr_idx = std::to_string(info.subaddr_idx.major)
+                      + "/"
+                      + std::to_string(info.subaddr_idx.minor);
+    }
+
     j = nl::json {
         {"public_key", pod_to_hex(info.pub_key)},
-        {"amount", std::to_string(info.amount)}
+        {"amount", std::to_string(info.amount)},
+        {"subaddr_idx", subaddr_idx}
+        
     };
 }
 
@@ -53,7 +65,9 @@ OutputSearchTask(unique_ptr<Account> _acc,
 std::string key() const override 
 {
     //return std::to_string(t_no) + "_" + m_address + m_viewkey;
-    return m_address + m_viewkey;
+    return m_address + m_viewkey 
+        + std::to_string(m_blocks_no)
+        + std::to_string(m_skip_coinbase);
 }
 
 
@@ -66,9 +80,6 @@ void operator()() override
     uint64_t blocks_lookahead = 10;
 
     auto searched_blk_no = last_block_height - m_blocks_no;
-
-    auto addr = m_acc->ai();
-    auto vk   = m_acc->vk().value();
 
     std::thread::id my_thread = std::this_thread::get_id(); 
 
@@ -178,7 +189,7 @@ void operator()() override
 
                 auto identifier = make_identifier(tx,
                                     make_unique<Output>(
-                                        &addr, &vk));
+                                        m_acc.get()));
                 identifier.identify();
 
                 auto const& outputs_found 
@@ -249,17 +260,29 @@ create(nl::json const& in_data)
           case 4: {no_of_past_blocks = 30*720; break;}
       }
 
-      auto acc = account_factory(address, viewkey);
+      auto acc = make_account(address, viewkey);
 
       if (!acc)
       {
           LOG_DEBUG << "Failed to parse address/viewkey";
           return nullptr;
       }
- 
-      auto task = make_unique<OutputSearchTask>(
-             std::move(acc), no_of_past_blocks);
 
+      unique_ptr<OutputSearchTask> task;
+
+      if (acc->type() == Account::PRIMARY)
+      {
+          auto pacc = make_primaryaccount(std::move(acc)); 
+
+          task = make_unique<OutputSearchTask>(
+                   std::move(pacc), no_of_past_blocks);
+      }
+      else
+      {
+          task = make_unique<OutputSearchTask>(
+                   std::move(acc), no_of_past_blocks);
+      }
+ 
       return task;
  }
  catch (std::exception const& e)

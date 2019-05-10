@@ -65,8 +65,9 @@
       <tr>
         <th>Block Height</th>
         <th>Timestamp</th>
-        <th>Output Public Key</th>
+        <th>Transaction id</th>
         <th>Amount</th>
+        <th>Acc/Sub idx</th>
       </tr>
     </thead>
     <tbody>
@@ -216,6 +217,7 @@ function setup_known_addresses()
                    var blk_number    = data["block"];
                    var blk_timestamp = new Date(data["timestamp"]*1000)
                                                 .toUTCString();
+                   var tx            = data["tx"]; 
 
                    for (var i = 0; i < data["outputs"].length; i++)
                    {
@@ -226,16 +228,22 @@ function setup_known_addresses()
                             + ", " + amount.toString();
                        //add_message(to_show);
 
-                       var new_row = outputs_table.insertRow(-1);
+                       var subaddress_index = output.subaddr_idx;
+
+                       var new_row = outputs_table.insertRow(1);
 
                        var blk = new_row.insertCell(0);
                        var timestamp = new_row.insertCell(1);
-                       var public_key= new_row.insertCell(2);
+                       //var public_key= new_row.insertCell(2);
+                       var tx_hash = new_row.insertCell(2);
                        var amountt = new_row.insertCell(3);
+                       var subaddr_idx = new_row.insertCell(4);
                        
                        blk.innerHTML        = blk_number;
                        timestamp.innerHTML  = blk_timestamp;
-                       public_key.innerHTML = output.public_key;
+                       //public_key.innerHTML = output.public_key;
+                       tx_hash.innerHTML = tx;
+                       subaddr_idx.innerHTML = subaddress_index;
                        amountt.innerHTML = amount.dividedBy(1e12).toString();
                    }
 

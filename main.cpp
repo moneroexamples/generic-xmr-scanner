@@ -2,7 +2,8 @@
 #include "src/monero_headers.h"
 
 #include "src/SearchTaskManager.h"
-#include "src/SearchCtrl.h"
+#include "src/controllers/SearchCtrl.h"
+#include "src/controllers/InfoCtrl.h"
 #include "src/utils.hpp"
 
 #include <boost/fiber/all.hpp> 
@@ -83,11 +84,16 @@ LOG_INFO << "SearchTaskManager loop started";
 
 // create websocket controller. this will listen for search
 // requrests from clients and submits tasks to task_manager
-auto t = std::make_shared<SearchWebSocketCtrl>(
+auto search_ws_ctrl = make_shared<SearchWebSocketCtrl>(
                           &task_manager);
-app().registerController(t);
+app().registerController(search_ws_ctrl);
 
 LOG_INFO << "SearchWebSocketCtrl registered";
+
+auto info_ctrl = make_shared<InfoCtrl>(InfoCtrl(&task_manager));
+app().registerController(info_ctrl);
+
+LOG_INFO << "InfoCtrl registered";
 
 LOG_INFO << "Listening at 127.0.0.1:" << port;
 

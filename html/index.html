@@ -3,6 +3,7 @@
   <head>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
     <meta content="utf-8" http-equiv="encoding">
+	<link rel="shortcut icon" href="about:blank">
     <link rel="stylesheet" href="css/chota.css">
     <script src='js/bignumber.min.js'></script>
   </head>
@@ -15,15 +16,13 @@
          </div>
      </div>
      <form>
-       <fieldset id="forms_input">
+       <fieldset id="forms_input>
             <legend>Scan for outputs with address and its viewkey</legend>
          <p>
 		    <label for="known-address">Public addresses</label>
 			<select id="known-address">
               <optgroup label="Use one of the publicly avaliable addresses">
-                <option selected="selected" value="1">Monero project donation</option>
-                <option value="2">Monero community crowdfunding system forum</option>
-                <option value="3">Monerujo donation</option>
+                  <!-- placeholder for addresses -->
               </optgroup>
 		    </select>
          </p>
@@ -67,7 +66,7 @@
         <th>Timestamp</th>
         <th>Transaction id</th>
         <th>Amount</th>
-        <th>Acc/Sub idx</th>
+        <th>Subaddr idx</th>
       </tr>
     </thead>
     <tbody>
@@ -77,40 +76,53 @@
  </div>
 
 <script type="text/javascript">
-  // index.html is based on the code provided by Restbed
-  // https://github.com/Corvusoft/restbed/blob/master/documentation/example/WEB_SOCKET.md#client
+// index.html is based on the code provided by Restbed
+// https://github.com/Corvusoft/restbed/blob/master/documentation/example/WEB_SOCKET.md#client
 
-  function add_message( message )
-  {
+function add_message( message )
+{
      var li = document.createElement( "li" );
      li.appendChild( document.createTextNode( "> " + message ) );
 
      var ul = document.getElementById( "messages" );
      ul.appendChild( li );
-  }
+}
 
 
- function setup_submit_btn()
- {
-    var submit_button = document.getElementById("submit-btn");
-        
-    submit_button.addEventListener("click",
-        function(evt) 
-        {
-            if ( window.restbed.ws !== null 
-                    && window.restbed.ws.readyState === window.restbed.ws.OPEN) 
-            {
-                window.restbed.ws.close();
-            }
+function ajax_get(url, callback)
+{
+    var xhr = new XMLHttpRequest({mozSystem: true});
+    xhr.open('GET', url );
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            callback(xhr.responseText);
+        }
+        else {
+            alert('ajax_get failed: ' + xhr.status);
+        }
+    };
+    xhr.send();
+}
 
-            open();
-        });
- }
- 
-function setup_known_addresses()
- {
+function setup_network()
+{
+    ajax_get(window.xmrscanner_url_http + "/status", 
+            function(response_txt) {
+                //console.log(response_txt);
+                var jstatus = JSON.parse(response_txt);
 
-    avaliable_addresses = [
+                if (jstatus['status'] == 'success')
+                {
+                    setup_known_addresses(jstatus['data']['network'])
+                }
+            });
+}
+
+function setup_known_addresses(nettype)
+{
+    if (nettype === 0)
+    {
+        avaliable_addresses = [
         {
             name: "Monero project donation address",
             address: "44AFFq5kSiGBoZ4NMDwYtN18obc8AemS33DBLWs3H7otXft3XjrpDtQGv7SqSsaBYBb98uNbr2VBBEt7f2wfn3RVGQBEP3A", 
@@ -126,10 +138,64 @@ function setup_known_addresses()
             address: "4AdkPJoxn7JCvAby9szgnt93MSEwdnxdhaASxbTBm6x5dCwmsDep2UYN4FhStDn5i11nsJbpU7oj59ahg8gXb1Mg3viqCuk", 
             viewkey: "b1aff2a12191723da0afbe75516f94dd8b068215f6e847d8da57aca5f1f98e0c"
         }
-    ];
-
+        ];
+    }
+    else if (nettype === 1)
+    {
+        avaliable_addresses = [
+        {
+            name: "Testnet wallet 1",
+            address: "44AFFq5kSiGBoZ4NMDwYtN18obc8AemS33DBLWs3H7otXft3XjrpDtQGv7SqSsaBYBb98uNbr2VBBEt7f2wfn3RVGQBEP3A", 
+            viewkey: "f359631075708155cc3d92a32b75a7d02a5dcf27756707b47a2b31b21c389501"
+        },
+        {
+            name: "Testnet wallet 2",
+            address: "45ttEikQEZWN1m7VxaVN9rjQkpSdmpGZ82GwUps66neQ1PqbQMno4wMY8F5jiDt2GoHzCtMwa7PDPJUJYb1GYrMP4CwAwNp", 
+            viewkey: "c9347bc1e101eab46d3a6532c5b6066e925f499b47d285d5720e6a6f4cc4350c"
+        },
+        {
+            name: "Testnet wallet 3",
+            address: "4AdkPJoxn7JCvAby9szgnt93MSEwdnxdhaASxbTBm6x5dCwmsDep2UYN4FhStDn5i11nsJbpU7oj59ahg8gXb1Mg3viqCuk", 
+            viewkey: "b1aff2a12191723da0afbe75516f94dd8b068215f6e847d8da57aca5f1f98e0c"
+        }
+        ];
+    else if (nettype === 2)
+    {
+        avaliable_addresses = [
+        {
+            name: "Stagenet wallet 1",
+            address: "44AFFq5kSiGBoZ4NMDwYtN18obc8AemS33DBLWs3H7otXft3XjrpDtQGv7SqSsaBYBb98uNbr2VBBEt7f2wfn3RVGQBEP3A", 
+            viewkey: "f359631075708155cc3d92a32b75a7d02a5dcf27756707b47a2b31b21c389501"
+        },
+        {
+            name: "Stagenet wallet 2",
+            address: "45ttEikQEZWN1m7VxaVN9rjQkpSdmpGZ82GwUps66neQ1PqbQMno4wMY8F5jiDt2GoHzCtMwa7PDPJUJYb1GYrMP4CwAwNp", 
+            viewkey: "c9347bc1e101eab46d3a6532c5b6066e925f499b47d285d5720e6a6f4cc4350c"
+        },
+        {
+            name: "Stagenet wallet 3",
+            address: "4AdkPJoxn7JCvAby9szgnt93MSEwdnxdhaASxbTBm6x5dCwmsDep2UYN4FhStDn5i11nsJbpU7oj59ahg8gXb1Mg3viqCuk", 
+            viewkey: "b1aff2a12191723da0afbe75516f94dd8b068215f6e847d8da57aca5f1f98e0c"
+        }
+        ];
+    }
 
     var known_address = document.getElementById("known-address");
+
+    // populate know-addresses select
+
+    for (var i = 0; i < avaliable_addresses.length; i++)
+    {
+        var opt = document.createElement('option');
+
+        opt.value = i+1;
+        opt.innerHTML = avaliable_addresses[i].name;
+
+        if (i === 0)
+            opt.selected = true;
+
+        known_address.childNodes[1].appendChild(opt);
+    }
 
     var address = document.getElementById("address");
     var viewkey = document.getElementById("viewkey");
@@ -148,136 +214,155 @@ function setup_known_addresses()
             viewkey.value = avaliable_addresses[selected_value].viewkey;   
 
         });
- }
+}
 
-  function open()
-  {
-     if ("WebSocket" in window)
-     {
-        var ws = new WebSocket("ws://127.0.0.1:8848/search");
-
-        ws.onopen = function()
+function setup_submit_btn()
+{
+    var submit_button = document.getElementById("submit-btn");
+        
+    submit_button.addEventListener("click",
+    function(evt) 
+    {
+        if ( window.restbed.ws !== null 
+                && window.restbed.ws.readyState === window.restbed.ws.OPEN) 
         {
-           add_message("Established connection.");
+            window.restbed.ws.close();
+        }
 
-            var address = document.getElementById("address").value;
-            var viewkey = document.getElementById("viewkey").value;
-            var timespan = document.getElementById("timespan").value;
-            var skip_coinbase = document.getElementById("skip-coinbase").checked;
+        open();
+    });
+}
 
-            var message = {"scanner": "outputs",
-                           "address": address, 
-                           "viewkey": viewkey,
-                           "timespan": timespan,
-                           "coinbase": skip_coinbase};
+function open()
+{
+ if ("WebSocket" in window)
+ {
+    var ws = new WebSocket(window.xmrscanner_url_ws + '/search');
 
-            add_message("submitting address and viewkey to the server");
-    
-            ws.send(JSON.stringify(message));
-        };
+    ws.onopen = function()
+    {
+       add_message("Established connection.");
 
-        ws.onmessage = function(evt)
+        var address = document.getElementById("address").value;
+        var viewkey = document.getElementById("viewkey").value;
+        var timespan = document.getElementById("timespan").value;
+        var skip_coinbase = document.getElementById("skip-coinbase").checked;
+
+        var message = {"scanner": "outputs",
+                       "address": address, 
+                       "viewkey": viewkey,
+                       "timespan": timespan,
+                       "coinbase": skip_coinbase};
+
+        add_message("submitting address and viewkey to the server");
+
+        ws.send(JSON.stringify(message));
+    };
+
+    ws.onmessage = function(evt)
+    {
+       var results = "";
+
+        try 
         {
-           var results = "";
+            results = JSON.parse(evt.data); 
+        } 
+        catch(e)
+        {
+            console.log("cant parson json: ", evt.data);
+            return;
+        }
 
-            try 
-            {
-                results = JSON.parse(evt.data); 
-            } 
-            catch(e)
-            {
-                console.log("cant parson json: ", evt.data);
+       var status_info = document.getElementById("status-info");
+
+        results["msgs"].forEach(function(msg)
+        {
+           if (msg["status"] !== "success")
+               return;
+
+           var data = msg["data"];
+
+           if ("progress" in data)
+           {
+                var current_block = data["progress"]["current_block"];
+                var blockchain_height 
+                   = data["progress"]["blockchain_height"];
+
+                status_info.innerHTML = current_block 
+                                + "/" + blockchain_height;
                 return;
-            }
+           }
 
-           var status_info = document.getElementById("status-info");
+           if ("outputs" in data)
+           {
+               var outputs_table = document.getElementById("outputs-table");
 
-            results["msgs"].forEach(function(msg)
-            {
-               if (msg["status"] !== "success")
-                   return;
+               var blk_number    = data["block"];
+               var blk_timestamp = new Date(data["timestamp"]*1000)
+                                            .toUTCString();
+               var tx            = data["tx"]; 
 
-               var data = msg["data"];
-
-               if ("progress" in data)
+               for (var i = 0; i < data["outputs"].length; i++)
                {
-                    var current_block = data["progress"]["current_block"];
-                    var blockchain_height 
-                       = data["progress"]["blockchain_height"];
+                   var output = data["outputs"][i];
 
-                    status_info.innerHTML = current_block 
-                                    + "/" + blockchain_height;
-                    return;
+                   var amount = BigNumber(output["amount"]);
+                   var to_show = output.public_key 
+                        + ", " + amount.toString();
+                   //add_message(to_show);
+
+                   var subaddress_index = output.subaddr_idx;
+
+                   var new_row = outputs_table.insertRow(-1);
+
+                   var blk = new_row.insertCell(0);
+                   var timestamp = new_row.insertCell(1);
+                   //var public_key= new_row.insertCell(2);
+                   var tx_hash = new_row.insertCell(2);
+                   var amountt = new_row.insertCell(3);
+                   var subaddr_idx = new_row.insertCell(4);
+                   
+                   blk.innerHTML        = blk_number;
+                   timestamp.innerHTML  = blk_timestamp;
+                   //public_key.innerHTML = output.public_key;
+                   tx_hash.innerHTML = tx;
+                   subaddr_idx.innerHTML = subaddress_index;
+                   amountt.innerHTML = amount.dividedBy(1e12).toString();
                }
 
-               if ("outputs" in data)
-               {
-                   var outputs_table = document.getElementById("outputs-table");
+               return;
+           }
+        });
 
-                   var blk_number    = data["block"];
-                   var blk_timestamp = new Date(data["timestamp"]*1000)
-                                                .toUTCString();
-                   var tx            = data["tx"]; 
+       // console.log(results);
+    };
 
-                   for (var i = 0; i < data["outputs"].length; i++)
-                   {
-                       var output = data["outputs"][i];
+    ws.onclose = function(evt)
+    {
+       add_message("Connection closed with RFC6455 code " + evt.code + ".");
+    };
 
-                       var amount = BigNumber(output["amount"]);
-                       var to_show = output.public_key 
-                            + ", " + amount.toString();
-                       //add_message(to_show);
+    ws.onerror = function( evt )
+    {
+       add_message("Error: socket connection interrupted.");
+    };
 
-                       var subaddress_index = output.subaddr_idx;
+    window.restbed.ws = ws;
+ }
+ else
+ {
+    alert("WebSockets NOT supported by your Browser!");
+ }
+}
 
-                       var new_row = outputs_table.insertRow(1);
-
-                       var blk = new_row.insertCell(0);
-                       var timestamp = new_row.insertCell(1);
-                       //var public_key= new_row.insertCell(2);
-                       var tx_hash = new_row.insertCell(2);
-                       var amountt = new_row.insertCell(3);
-                       var subaddr_idx = new_row.insertCell(4);
-                       
-                       blk.innerHTML        = blk_number;
-                       timestamp.innerHTML  = blk_timestamp;
-                       //public_key.innerHTML = output.public_key;
-                       tx_hash.innerHTML = tx;
-                       subaddr_idx.innerHTML = subaddress_index;
-                       amountt.innerHTML = amount.dividedBy(1e12).toString();
-                   }
-
-                   return;
-               }
-            });
-
-           // console.log(results);
-        };
-
-        ws.onclose = function(evt)
-        {
-           add_message("Connection closed with RFC6455 code " + evt.code + ".");
-        };
-
-        ws.onerror = function( evt )
-        {
-           add_message("Error: socket connection interrupted.");
-        };
-
-        window.restbed.ws = ws;
-     }
-     else
-     {
-        alert("WebSockets NOT supported by your Browser!");
-     }
-  }
-
-  (function()
-  {
+(function()
+{
+    window.xmrscanner_url_http = "http://127.0.0.1:8848"
+    window.xmrscanner_url_ws = "ws://127.0.0.1:8848"
     window.restbed = { ws: null };
+    setup_network();
     setup_submit_btn();
-    setup_known_addresses()
-  })();
+})();
 </script>
 </body>
 </html>

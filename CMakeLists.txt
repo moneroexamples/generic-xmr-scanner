@@ -32,7 +32,8 @@ find_package(Boost REQUIRED
 add_executable(${PROJECT_NAME}
         main.cpp
         src/utils.cpp
-        src/SearchCtrl.cpp)
+        src/controllers/SearchCtrl.cpp
+        src/controllers/InfoCtrl.cpp) 
 
 target_include_directories(${PROJECT_NAME}
     PRIVATE 

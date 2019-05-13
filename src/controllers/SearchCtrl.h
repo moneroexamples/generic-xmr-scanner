@@ -1,7 +1,7 @@
 #ifndef SEARCHCTRL_H
 #define SEARCHCTRL_H
 
-#include "searchtasks/OutputSearchTask.h"
+#include "../searchtasks/OutputSearchTask.h"
 
 namespace xmreg
 {

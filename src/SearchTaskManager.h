@@ -316,6 +316,15 @@ void managment_loop()
     }
 }
 
+auto status() const
+{
+    return jb().success(
+        {
+            {"network", m_core->get_nettype()},
+            {"current_height", m_core->get_current_blockchain_height()}
+        });
+}
+
 
 private:
 

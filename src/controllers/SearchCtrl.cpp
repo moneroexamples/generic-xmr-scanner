@@ -1,7 +1,7 @@
 
 #include "SearchCtrl.h"
 
-#include "SearchTaskManager.h"
+#include "../SearchTaskManager.h"
 
 namespace xmreg
 {
@@ -83,6 +83,8 @@ SearchWebSocketCtrl::handleNewMessage(
              send_and_close(ws_conn, "Unknonw scanner");
              return;
          }
+
+         cout << jmessage->dump() << endl;
              
          auto search_task = OutputSearchTask::create(*jmessage);
 

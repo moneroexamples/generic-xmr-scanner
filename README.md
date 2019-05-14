@@ -1,4 +1,4 @@
-## Generic monero scanner
+## Generic Monero Scanner of Monero blockchain
 
 The project aims to develop generic online scanner/searcher for monero. Its capability includes searching for:
 
@@ -30,11 +30,10 @@ The generic monero scanner is solution to these issues.
 
 The key technologies used in the scanner are:
 
- - C++17
- - websockets - support provided by [drogon](https://github.com/an-tao/drogon)
- - [FiberPool](https://github.com/moneroexamples/fiberpool) - single-file header-only C++17 boost::fiber thread pool library 
- - [xmregcore](https://github.com/moneroexamples/xmregcore) - modular Universal Identifier and Account representation for monero.
- - googletest - unit testing and mocking framework
+ - [C++17](https://en.wikipedia.org/wiki/C%2B%2B17) - recent version of the C++ programming language.
+ - [websockets](https://en.wikipedia.org/wiki/WebSocket) -  protocol for duplex communication between frontend and backend (support provided by [drogon](https://github.com/an-tao/drogon))
+ - [FiberPool](https://github.com/moneroexamples/fiberpool) - single-file header-only C++17 [boost::fiber](https://github.com/boostorg/fiber) thread pool library 
+ - [xmregcore](https://github.com/moneroexamples/xmregcore) - core utilities used in moneroexample projects.
 
 ## Example compilation on Ubuntu 18.04
 
@@ -58,6 +57,8 @@ cmake ..
 
 # altearnatively can use cmake -DMONERO_DIR=/path/to/monero_folder ..
 # if monero is not in ~/monero
+
+make
 ```
 
 Following the compilation, `xmrscanner` executable should be avaliable in the `build` folder. 
@@ -70,12 +71,15 @@ The project comes with basic html fronted located in `html` folder. Read more he
 #### Program options
 
 ```bash
-  -h [ --help ]                Help
-  -n [ --nettype ] arg (=2)    network type: 0-MAINNET, 1-TESTNET, 2-STAGENET
-  -b [ --blockchain-path ] arg Non-default path to lmdb folder containing the 
-                               blockchain. Default is ~/.bitmonero/sta
-                               genet/lmdb
-  -p [ --port ] arg (=8848)    Service port
+xmrscanner: generic monero scanner:
+  -h [ --help ]                  Help
+  -n [ --nettype ] arg (=2)      network type: 0-MAINNET, 1-TESTNET, 2-STAGENET
+  -b [ --blockchain-path ] arg   Non-default path to lmdb folder containing the
+                                 blockchain. Default is /home/mwo2/.bitmonero/s
+                                 tagenet/lmdb
+  -f [ --fiberthreads ] arg (=0) Number of fiberpool thread worksers. Default 
+                                 is 0 - based on hardware
+  -p [ --port ] arg (=8848)      Service port
 ```
 
 

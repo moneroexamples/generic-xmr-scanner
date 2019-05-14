@@ -90,6 +90,9 @@ app().registerController(search_ws_ctrl);
 
 LOG_INFO << "SearchWebSocketCtrl registered";
 
+// create regular http controller. It will provide
+// initial information, e.g., networy type, to the 
+// frontend.
 auto info_ctrl = make_shared<InfoCtrl>(InfoCtrl(&task_manager));
 app().registerController(info_ctrl);
 

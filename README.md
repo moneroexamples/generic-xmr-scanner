@@ -57,6 +57,8 @@ cmake ..
 
 # altearnatively can use cmake -DMONERO_DIR=/path/to/monero_folder ..
 # if monero is not in ~/monero
+
+make
 ```
 
 Following the compilation, `xmrscanner` executable should be avaliable in the `build` folder. 

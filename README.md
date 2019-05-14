@@ -34,7 +34,6 @@ The key technologies used in the scanner are:
  - websockets - support provided by [drogon](https://github.com/an-tao/drogon)
  - [FiberPool](https://github.com/moneroexamples/fiberpool) - single-file header-only C++17 boost::fiber thread pool library 
  - [xmregcore](https://github.com/moneroexamples/xmregcore) - modular Universal Identifier and Account representation for monero.
- - googletest - unit testing and mocking framework
 
 ## Example compilation on Ubuntu 18.04
 
@@ -70,12 +69,15 @@ The project comes with basic html fronted located in `html` folder. Read more he
 #### Program options
 
 ```bash
-  -h [ --help ]                Help
-  -n [ --nettype ] arg (=2)    network type: 0-MAINNET, 1-TESTNET, 2-STAGENET
-  -b [ --blockchain-path ] arg Non-default path to lmdb folder containing the 
-                               blockchain. Default is ~/.bitmonero/sta
-                               genet/lmdb
-  -p [ --port ] arg (=8848)    Service port
+xmrscanner: generic monero scanner:
+  -h [ --help ]                  Help
+  -n [ --nettype ] arg (=2)      network type: 0-MAINNET, 1-TESTNET, 2-STAGENET
+  -b [ --blockchain-path ] arg   Non-default path to lmdb folder containing the
+                                 blockchain. Default is /home/mwo2/.bitmonero/s
+                                 tagenet/lmdb
+  -f [ --fiberthreads ] arg (=0) Number of fiberpool thread worksers. Default 
+                                 is 0 - based on hardware
+  -p [ --port ] arg (=8848)      Service port
 ```
 
 

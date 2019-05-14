@@ -84,7 +84,7 @@ SearchWebSocketCtrl::handleNewMessage(
              return;
          }
 
-         cout << jmessage->dump() << endl;
+         //cout << jmessage->dump() << endl;
              
          auto search_task = OutputSearchTask::create(*jmessage);
 
@@ -99,9 +99,11 @@ SearchWebSocketCtrl::handleNewMessage(
                                 std::move(search_task),
                                 ws_conn);
 
-         if (success) 
+         if (!success) 
          {
-             ws_conn->send("Search task submitted");
+             LOG_ERROR << "Failed search task submission"; 
+             ws_conn->send("Failed Search task submitttion");
+             ws_conn->forceClose();
          }
 
          break;

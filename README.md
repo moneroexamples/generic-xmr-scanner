@@ -40,13 +40,33 @@ The key technologies used in the scanner are:
 
 #### Monero download and compilation
 
-Follow instructions in the following link:
+To compile the project, most recent monero development version (i.e., its `master` branch)
+needs to be compiled first. 
 
-https://github.com/moneroexamples/monero-compilation/blob/master/README.md
+```bash
+# first install monero dependecines
+sudo apt update
+
+sudo apt install git build-essential cmake libboost-all-dev miniupnpc libunbound-dev graphviz doxygen libunwind8-dev pkg-config libssl-dev libcurl4-openssl-dev libgtest-dev libreadline-dev libzmq3-dev libsodium-dev libhidapi-dev libhidapi-libusb0
+
+# go to home folder
+cd ~
+git clone --recurse-submodules https://github.com/monero-project/monero.git
+
+cd monero/
+
+USE_SINGLE_BUILDDIR=1 make
+```
+Using `USE_SINGLE_BUILDDIR` flag is important. Without the flag, cmake of the project
+will not be able to locate the compiled monero.
 
 #### Project download and compilation
 
 ```bash
+
+# go to home folder 
+cd ~
+
 # drogon dependencies
 sudo apt install libjsoncpp-dev uuid-dev
 

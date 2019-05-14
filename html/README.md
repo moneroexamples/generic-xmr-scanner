@@ -11,6 +11,9 @@ cd ~/generic-xmr-scanner/html
 
 # run python's http server on port 9100
 python -m http.server 9100
+
+# for python 2 use
+# python -m SimpleHTTPServer 9100
 ```
 
 Then just go to `http://127.0.0.1:9100` using your browser and you should see

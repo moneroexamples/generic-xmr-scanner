@@ -22,6 +22,15 @@ using epee::string_tools::pod_to_hex;
 map<string, std::any>
 process_program_options(int argc, const char *argv[]);
 
+inline auto
+get_current_timestamp() 
+{
+   return  chrono::duration_cast<chrono::seconds>(
+          chrono::system_clock::now().time_since_epoch());
+}
+
+
+
 }
 
 #endif // UTILS_HPP

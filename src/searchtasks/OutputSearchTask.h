@@ -93,6 +93,7 @@ void operator()() override
         std::cout << buffer.str() << std::flush;
     }
 
+    auto time1 = chrono::system_clock::now();
 
     while(!m_should_finish)
     {
@@ -121,7 +122,14 @@ void operator()() override
             break;
         }
         
+    
+        auto time2 = chrono::system_clock::now();
+
+        if (time2 - time1 > 2s || h2 == last_block_height)
         {
+            // update search progress status
+            // every number of seconds
+            
             ostringstream os;
 
             os  << key().substr(0, 6) << " " 
@@ -144,7 +152,9 @@ void operator()() override
                         }});
             
             notify(this);
-        }
+
+            time1 = chrono::system_clock::now();
+       }
 
         //for (auto const& blk: blocks)
         for (uint64_t i {0}; i < blocks.size(); ++i)
@@ -256,8 +266,7 @@ create(nl::json const& in_data)
       {
           case 1: {no_of_past_blocks = 720; break;}
           case 2: {no_of_past_blocks = 7*720; break;}
-          case 3: {no_of_past_blocks = 14*720; break;}
-          case 4: {no_of_past_blocks = 30*720; break;}
+          case 3: {no_of_past_blocks = 30*720; break;}
       }
 
       auto skip_coinbase = in_data["coinbase"];

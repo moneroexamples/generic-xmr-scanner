@@ -99,7 +99,7 @@ LOG_INFO << "Listening at 127.0.0.1:" << port;
 
 app().setThreadNum(1);
 app().setIdleConnectionTimeout(1h);
-app().addListener("127.0.0.1", port);
+app().addListener("0.0.0.0", port);
 
 app().run();
 

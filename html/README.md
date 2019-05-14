@@ -9,7 +9,7 @@ The easiest way to serve it is to use  python 3's build in `http` server:
 # go to where generic-xmr-scanner is located, e.g.,
 cd ~/generic-xmr-scanner/html
 
-# run python's http server on port 9100
+# run python 3 http server on port 9100
 python -m http.server 9100
 
 # for python 2 use

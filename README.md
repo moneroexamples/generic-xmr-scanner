@@ -47,6 +47,9 @@ https://github.com/moneroexamples/monero-compilation/blob/master/README.md
 #### Project download and compilation
 
 ```bash
+# drogon dependencies
+sudo apt install libjsoncpp-dev uuid-dev
+
 git clone --recurse-submodules https://github.com/moneroexamples/generic-xmr-scanner
 
 cd generic-xmr-scanner

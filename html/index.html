@@ -15,8 +15,17 @@
              <h5 class="is-text-center is-marginless">Fully <a href="https://github.com/moneroexamples/generic-xmr-scanner">open sourced</a> scanner of monero blockchain</h5>
          </div>
      </div>
+
+	<div>
+		<p>
+			The initial version of the scanner allows for searching outputs belonging to the given address and viewkey. Further capabilities
+			may include scanning for possible spendings, transactions which use our outputs as their ring members. 
+			
+		</p>
+	</div>
+
      <form>
-       <fieldset id="forms_input>
+       <fieldset id="forms_input">
             <legend>Scan for outputs with address and its viewkey</legend>
          <p>
 		    <label for="known-address">Public addresses</label>
@@ -53,13 +62,12 @@
        </fieldset>
      </form>
 
-  <div id="status-info" class="row"></div>
-  <div class="row">
+    <div class="row">
       <ul id="messages"></ul>
   </div>
 
   <table id="outputs-table">
-    <caption>Output scanning results</caption>
+    <caption>Output scanning results. Progress: <span id="status-info">n/a</span></caption>
     <thead>
       <tr>
         <th>Block Height</th>
@@ -69,7 +77,7 @@
         <th>Subaddr idx</th>
       </tr>
     </thead>
-    <tbody>
+    <tbody id="outputs-table-body">
     </tbody>
   </table>
 
@@ -82,7 +90,7 @@
 function add_message( message )
 {
      var li = document.createElement( "li" );
-     li.appendChild( document.createTextNode( "> " + message ) );
+     li.innerHTML = message;
 
      var ul = document.getElementById( "messages" );
      ul.appendChild( li );
@@ -218,7 +226,6 @@ function setup_known_addresses(nettype)
 
             address.value = avaliable_addresses[selected_value].address;   
             viewkey.value = avaliable_addresses[selected_value].viewkey;   
-
         });
 }
 
@@ -239,6 +246,15 @@ function setup_submit_btn()
     });
 }
 
+function remove_children(elem_name)
+{
+	var elem = document.getElementById(elem_name);
+
+	while (elem.firstChild) {
+		elem.removeChild(elem.firstChild);
+	}
+}
+
 function open()
 {
  if ("WebSocket" in window)
@@ -247,7 +263,10 @@ function open()
 
     ws.onopen = function()
     {
-       add_message("Established connection.");
+		remove_children('messages');
+		remove_children('outputs-table-body');
+
+        add_message("Established connection.");
 
         var address = document.getElementById("address").value;
         var viewkey = document.getElementById("viewkey").value;
@@ -279,6 +298,16 @@ function open()
             return;
         }
 
+       if ('status' in results)
+       {
+            if (results.status === 'error')
+            {
+                add_message('<span style="color:red">' 
+                            + results.message + '</span>');
+                return;
+            }
+       }
+
        var status_info = document.getElementById("status-info");
 
         results["msgs"].forEach(function(msg)
@@ -301,7 +330,7 @@ function open()
 
            if ("outputs" in data)
            {
-               var outputs_table = document.getElementById("outputs-table");
+               var outputs_table = document.getElementById("outputs-table-body");
 
                var blk_number    = data["block"];
                var blk_timestamp = new Date(data["timestamp"]*1000)

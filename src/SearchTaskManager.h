@@ -183,7 +183,7 @@ auto push(std::shared_ptr<ISearchTask>&& task,
 
         existing_task_ptr->add_conn(ws_conn); 
         
-        return make_tuple(existing_it, false);
+        return make_tuple(existing_it, true);
     }
     
     // tasks does not exist, so we submit it to fiberpool

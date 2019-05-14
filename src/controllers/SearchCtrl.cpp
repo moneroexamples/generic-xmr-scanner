@@ -49,7 +49,7 @@ void
 send_and_close(WebSocketConnectionPtr const& ws_conn,
                string msg)
 {
-     LOG_DEBUG << msg;
+     LOG_ERROR << msg;
      ws_conn->send(jb().error(msg).dump());
      ws_conn->forceClose();
 }
@@ -101,25 +101,19 @@ SearchWebSocketCtrl::handleNewMessage(
 
          if (!success) 
          {
-             LOG_ERROR << "Failed search task submission"; 
-             ws_conn->send("Failed Search task submitttion");
-             ws_conn->forceClose();
+             send_and_close(ws_conn, "Search task submittion failed");
          }
 
          break;
      }
      case WebSocketMessageType::Ping:
      {
-         //cout << "Got ping: ->" << message << "<-" << endl;
          ws_conn->send(message, WebSocketMessageType::Pong);
          break;
      }
      default:
      {
-         cout << "Got unexpcted message: ->" 
-              << message << "<-" << endl;
-         ws_conn->send(message, WebSocketMessageType::Pong);
-         ws_conn->forceClose();
+         send_and_close(ws_conn, "Unexpected message");
      }
     }
 }

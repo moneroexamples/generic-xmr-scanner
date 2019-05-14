@@ -260,6 +260,8 @@ create(nl::json const& in_data)
           case 4: {no_of_past_blocks = 30*720; break;}
       }
 
+      auto skip_coinbase = in_data["coinbase"];
+
       auto acc = make_account(address, viewkey);
 
       if (!acc)
@@ -275,12 +277,14 @@ create(nl::json const& in_data)
           auto pacc = make_primaryaccount(std::move(acc)); 
 
           task = make_unique<OutputSearchTask>(
-                   std::move(pacc), no_of_past_blocks);
+                   std::move(pacc), no_of_past_blocks,
+                   skip_coinbase);
       }
       else
       {
           task = make_unique<OutputSearchTask>(
-                   std::move(acc), no_of_past_blocks);
+                   std::move(acc), no_of_past_blocks,
+                   skip_coinbase);
       }
  
       return task;

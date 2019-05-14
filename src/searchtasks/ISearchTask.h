@@ -76,8 +76,8 @@ public:
         //std::lock_guard lk {m_mtx_results};
         return make_pair(
                 current_progress,
-                std::vector(results.begin() + msg_idx, 
-                    results.end()));
+                std::vector<nl::json>(results.begin() + msg_idx, 
+                            results.end()));
     }
 
     void set_microcore(MicroCore const* _mcore) 

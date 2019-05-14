@@ -31,7 +31,7 @@ The generic monero scanner is solution to these issues.
 The key technologies used in the scanner are:
 
  - [C++17](https://en.wikipedia.org/wiki/C%2B%2B17) - recent version of the C++ programming language.
- - [websockets](https://en.wikipedia.org/wiki/WebSocket) - support provided by [drogon](https://github.com/an-tao/drogon)
+ - [websockets](https://en.wikipedia.org/wiki/WebSocket) -  protocol for duplex communication between frontend and backend (support provided by [drogon](https://github.com/an-tao/drogon))
  - [FiberPool](https://github.com/moneroexamples/fiberpool) - single-file header-only C++17 [boost::fiber](https://github.com/boostorg/fiber) thread pool library 
  - [xmregcore](https://github.com/moneroexamples/xmregcore) - core utilities used in moneroexample projects.
 

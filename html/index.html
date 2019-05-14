@@ -16,7 +16,7 @@
          </div>
      </div>
 
-	<div>
+	 <div id='no-ssl-warn' style='display: none'>
 		<p class="is-horizontal-align">
         <span class="text-error">No SSL/HTTPs avaiable</span>. Please use only publicly available addresses over insecure network.
 		</p>
@@ -109,6 +109,33 @@ function ajax_get(url, callback)
     xhr.send();
 }
 
+
+function formatDate(date, fmt) {
+	//from https://stackoverflow.com/a/2315590/248823
+
+    function pad(value) {
+        return (value.toString().length < 2) ? '0' + value : value;
+    }
+    return fmt.replace(/%([a-zA-Z])/g, function (_, fmtCode) {
+        switch (fmtCode) {
+        case 'Y':
+            return date.getUTCFullYear();
+        case 'M':
+            return pad(date.getUTCMonth() + 1);
+        case 'd':
+            return pad(date.getUTCDate());
+        case 'H':
+            return pad(date.getUTCHours());
+        case 'm':
+            return pad(date.getUTCMinutes());
+        case 's':
+            return pad(date.getUTCSeconds());
+        default:
+            throw new Error('Unsupported format code: ' + fmtCode);
+        }
+    });
+}
+
 function setup_network()
 {
     ajax_get(window.xmrscanner_url_http + "/status", 
@@ -125,6 +152,8 @@ function setup_network()
 
 function setup_known_addresses(nettype)
 {
+    window.xmrexplorer = 'https://xmrchain.org/tx/';
+
     if (nettype === 0)
     {
         avaliable_addresses = [
@@ -144,6 +173,10 @@ function setup_known_addresses(nettype)
             viewkey: "b1aff2a12191723da0afbe75516f94dd8b068215f6e847d8da57aca5f1f98e0c"
         }
         ];
+
+        document.getElementById("no-ssl-warn").style.display = "block"; 
+
+        window.xmrexplorer = 'https://xmrchain.net/tx/';
     }
     else if (nettype === 1)
     {
@@ -164,6 +197,10 @@ function setup_known_addresses(nettype)
             viewkey: "ab227fb819e2b2100bb00840df1f00ed89867752d7d9d7918f6db6a0fa7f6b0c"
         }
         ];
+        
+        document.getElementById("no-ssl-warn").style.display = "none"; 
+
+        window.xmrexplorer = 'https://testnet.xmrchain.net/tx/';
     }
     else if (nettype === 2)
     {
@@ -189,6 +226,10 @@ function setup_known_addresses(nettype)
             viewkey: "585db489cbb1eb4ec3b6b4dfe953a676bbc3af21bd3ac0765d039cdd0d497700"
         },
         ];
+
+        document.getElementById("no-ssl-warn").style.display = "none"; 
+        
+        window.xmrexplorer = 'https://stagenet.xmrchain.net/tx/';
     }
 
     var known_address = document.getElementById("known-address");
@@ -309,6 +350,10 @@ function open()
 
         results["msgs"].forEach(function(msg)
         {
+
+           if (msg === null)
+            return;
+
            if (msg["status"] !== "success")
                return;
 
@@ -330,8 +375,9 @@ function open()
                var outputs_table = document.getElementById("outputs-table-body");
 
                var blk_number    = data["block"];
-               var blk_timestamp = new Date(data["timestamp"]*1000)
-                                            .toUTCString();
+               //var blk_timestamp = new Date(data["timestamp"]*1000).toUTCString();
+               var blk_timestamp = formatDate(new Date(data["timestamp"]*1000), '%Y-%M-%d %H:%m:%s');
+
                var tx            = data["tx"]; 
 
                for (var i = 0; i < data["outputs"].length; i++)
@@ -353,11 +399,17 @@ function open()
                    var tx_hash = new_row.insertCell(2);
                    var amountt = new_row.insertCell(3);
                    var subaddr_idx = new_row.insertCell(4);
+
+                   var tx_link = document.createElement('a');
+                   tx_link.appendChild(document.createTextNode(tx));
+                   tx_link.title = tx;
+                   tx_link.target = '_black';
+                   tx_link.href = window.xmrexplorer + tx;
                    
                    blk.innerHTML        = blk_number;
                    timestamp.innerHTML  = blk_timestamp;
                    //public_key.innerHTML = output.public_key;
-                   tx_hash.innerHTML = tx;
+                   tx_hash.appendChild(tx_link);
                    subaddr_idx.innerHTML = subaddress_index;
                    amountt.innerHTML = amount.dividedBy(1e12).toString();
                }

@@ -103,7 +103,7 @@ xmrscanner: generic monero scanner:
   -h [ --help ]                  Help
   -n [ --nettype ] arg (=2)      network type: 0-MAINNET, 1-TESTNET, 2-STAGENET
   -b [ --blockchain-path ] arg   Non-default path to lmdb folder containing the
-                                 blockchain. Default is /home/mwo2/.bitmonero/s
+                                 blockchain. Default is ~/.bitmonero/s
                                  tagenet/lmdb
   -f [ --fiberthreads ] arg (=0) Number of fiberpool thread workers. Default 
                                  is 0 - based on hardware

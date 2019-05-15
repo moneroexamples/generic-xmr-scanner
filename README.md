@@ -56,10 +56,13 @@ sudo apt install git build-essential cmake libboost-all-dev miniupnpc libunbound
 
 # go to home folder
 cd ~
+
+% get monero source code
 git clone --recurse-submodules https://github.com/monero-project/monero.git
 
 cd monero/
 
+% compile
 USE_SINGLE_BUILDDIR=1 make
 ```
 Using `USE_SINGLE_BUILDDIR` flag is important. Without the flag, cmake of the project

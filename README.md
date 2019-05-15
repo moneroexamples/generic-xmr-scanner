@@ -1,18 +1,18 @@
 ## Generic Monero Scanner of Monero blockchain
 
-The project aims to develop generic online scanner/searcher for monero. Its possible capability includes searching for:
+The project aims to develop generic online scanner/searcher for Monero. Its possible capability includes searching for:
 
  - outputs associated with given address and viewkey (already implemented with full support for subaddresses),
  - possible spendings based on only address and viewkey,
  - transactions which use our outputs as decoys/ring members,
  - transactions associated with given legacy payment ids,
- - multi-output txs to subaddresses,
- - txs with integrated payment ids,
+ - multi-output transactions to subaddresses,
+ - transactions with integrated payment ids,
  - and more ...
 
 ## Online version
 
-The current development version of the scanner on stagenet network is avaliable at:
+The current development version of the scanner on stagenet network is available at:
 
  - [http://139.162.60.17:9100/](http://139.162.60.17:9100/)
 
@@ -26,10 +26,10 @@ The idea is based on two projects:
 The first project allowed for online identification of outputs 
 associated with given address and viewkey. The second project additionally
 searched for transactions which use the outputs as decoys/ring members. 
-However, the first projcet got discontinued, while the second is a
+However, the first project got discontinued, while the second is a
 command-line program which limits its widespread use. 
 
-The generic monero scanner is solution to these issues.
+The generic Monero scanner is solution to these issues.
  
 ## Technologies
 
@@ -45,11 +45,11 @@ The key technologies used in the scanner are:
 
 #### Monero download and compilation
 
-To compile the project, most recent monero development version (i.e., its `master` branch)
+To compile the project, most recent Monero development version (i.e., its `master` branch)
 needs to be compiled first. 
 
 ```bash
-# first install monero dependecines
+# first install monero dependencies
 sudo apt update
 
 sudo apt install git build-essential cmake libboost-all-dev miniupnpc libunbound-dev graphviz doxygen libunwind8-dev pkg-config libssl-dev libcurl4-openssl-dev libgtest-dev libreadline-dev libzmq3-dev libsodium-dev libhidapi-dev libhidapi-libusb0
@@ -89,7 +89,7 @@ cmake ..
 make
 ```
 
-Following the compilation, `xmrscanner` executable should be avaliable in the `build` folder. 
+Following the compilation, `xmrscanner` executable should be available in the `build` folder. 
 
 #### Html fronted 
 The project comes with basic html fronted located in `html` folder. Read more here: 
@@ -105,7 +105,7 @@ xmrscanner: generic monero scanner:
   -b [ --blockchain-path ] arg   Non-default path to lmdb folder containing the
                                  blockchain. Default is /home/mwo2/.bitmonero/s
                                  tagenet/lmdb
-  -f [ --fiberthreads ] arg (=0) Number of fiberpool thread worksers. Default 
+  -f [ --fiberthreads ] arg (=0) Number of fiberpool thread workers. Default 
                                  is 0 - based on hardware
   -p [ --port ] arg (=8848)      Service port
 ```

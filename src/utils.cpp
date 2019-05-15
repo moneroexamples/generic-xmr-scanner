@@ -53,7 +53,7 @@ try
          blockchain_path_msg.c_str())
         ("fiberthreads,f",
              po::value<size_t>()->default_value(0),
-         "Number of fiberpool thread worksers. "
+         "Number of fiberpool thread workers. "
          "Default is 0 - based on hardware")
         ("port,p", po::value<size_t>()->default_value(8848),
          "Service port");

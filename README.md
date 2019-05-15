@@ -1,17 +1,22 @@
 ## Generic Monero Scanner of Monero blockchain
 
-The project aims to develop generic online scanner/searcher for monero. Its capability includes searching for:
+The project aims to develop generic online scanner/searcher for monero. Its possible capability includes searching for:
 
- - outputs associated with given address and viewkey,
+ - outputs associated with given address and viewkey (already implemented with full support for subaddresses),
  - possible spendings based on only address and viewkey,
- - txs which use our outputs as decoys/ring members,
- - txs associated with given legacy payment ids,
+ - transactions which use our outputs as decoys/ring members,
+ - transactions associated with given legacy payment ids,
  - multi-output txs to subaddresses,
  - txs with integrated payment ids,
- - and more
+ - and more ...
+
+## Online version
+
+The current development version of the scanner on stagenet network is avaliable at:
+
+ - [http://139.162.60.17:9100/](http://139.162.60.17:9100/)
 
 ## Motivation
-
 
 The idea is based on two projects:
 

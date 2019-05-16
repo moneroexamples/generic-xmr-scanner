@@ -232,14 +232,6 @@ void clean_up_tasks()
 {
     std::lock_guard lk {m_tasks_mtx};
     
-    { 
-        ostringstream os;
-
-        os << "running " << m_tasks.size() 
-           << " tasks\n";
-
-        cout << os.str() << flush; 
-    }
 
     for (auto it = m_tasks.cbegin(); it != m_tasks.end();)
     {
@@ -277,6 +269,15 @@ void clean_up_tasks()
         {
             ++it;
         }
+    }
+    
+    { 
+        ostringstream os;
+
+        os << "running " << m_tasks.size() 
+           << " tasks\n";
+
+        cout << os.str() << flush; 
     }
 }
 

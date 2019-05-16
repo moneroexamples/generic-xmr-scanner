@@ -56,10 +56,13 @@ sudo apt install git build-essential cmake libboost-all-dev miniupnpc libunbound
 
 # go to home folder
 cd ~
+
+# get monero source code
 git clone --recurse-submodules https://github.com/monero-project/monero.git
 
 cd monero/
 
+# compile
 USE_SINGLE_BUILDDIR=1 make
 ```
 Using `USE_SINGLE_BUILDDIR` flag is important. Without the flag, cmake of the project
@@ -103,7 +106,7 @@ xmrscanner: generic monero scanner:
   -h [ --help ]                  Help
   -n [ --nettype ] arg (=2)      network type: 0-MAINNET, 1-TESTNET, 2-STAGENET
   -b [ --blockchain-path ] arg   Non-default path to lmdb folder containing the
-                                 blockchain. Default is /home/mwo2/.bitmonero/s
+                                 blockchain. Default is ~/.bitmonero/s
                                  tagenet/lmdb
   -f [ --fiberthreads ] arg (=0) Number of fiberpool thread workers. Default 
                                  is 0 - based on hardware

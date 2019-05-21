@@ -48,6 +48,11 @@ install:
     chmod +x ./cmake-3.11.4-Linux-x86_64.sh
     sudo ./cmake-3.11.4-Linux-x86_64.sh --prefix=. --exclude-subdir --skip-license
     ./bin/cmake --version
+  -|
+   git clone --recurse-submodules https://github.com/monero-project/monero.git
+   cd monero
+   make
+
 
 script:
   - mkdir build && cd build

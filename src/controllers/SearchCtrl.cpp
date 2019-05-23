@@ -106,11 +106,6 @@ SearchWebSocketCtrl::handleNewMessage(
 
          break;
      }
-     case WebSocketMessageType::Ping:
-     {
-         ws_conn->send(message, WebSocketMessageType::Pong);
-         break;
-     }
      default:
      {
          send_and_close(ws_conn, "Unexpected message");

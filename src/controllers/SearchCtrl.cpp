@@ -80,7 +80,7 @@ SearchWebSocketCtrl::handleNewMessage(
 
          if ((*jmessage)["scanner"] != "outputs")
          {
-             send_and_close(ws_conn, "Unknonw scanner");
+             send_and_close(ws_conn, "Unknown scanner");
              return;
          }
 
@@ -106,7 +106,7 @@ SearchWebSocketCtrl::handleNewMessage(
 
          break;
      }
-     case WebSocketMessageType::ping:
+     case WebSocketMessageType::Ping:
          break;
      default:
      {

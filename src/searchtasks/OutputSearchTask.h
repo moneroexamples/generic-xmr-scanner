@@ -58,6 +58,7 @@ OutputSearchTask(unique_ptr<Account> _acc,
       m_blocks_no {_no_of_blocks},
       m_skip_coinbase {_skip_coinbase} 
 {
+    assert(m_acc);
     m_address = m_acc->ai2str();
     m_viewkey = m_acc->vk2str();
 }
@@ -73,8 +74,6 @@ std::string key() const override
 
 void operator()() override
 {
-    assert(m_core);
-
     auto last_block_height = current_height(); 
 
     uint64_t blocks_lookahead = 10;
@@ -251,15 +250,21 @@ create(nl::json const& in_data)
 {
  string address;
  string viewkey;
- size_t timespan;
+ size_t timespan {1};
+ bool skip_coinbase {true};
 
  try 
  {
-      address = in_data["address"]; 
-      viewkey = in_data["viewkey"];
-      timespan = std::atoi(in_data["timespan"]
+      address = in_data.at("address"); 
+      viewkey = in_data.at("viewkey");
+      
+      if (in_data.contains("timespan")
+            && in_data["timespan"].is_string()) 
+      {
+        timespan = std::atoi(in_data["timespan"]
                            .get<string>().c_str());
-        
+      }
+
       uint64_t no_of_past_blocks {720}; // about 1 day
 
       switch(timespan)
@@ -269,7 +274,11 @@ create(nl::json const& in_data)
           case 3: {no_of_past_blocks = 30*720; break;}
       }
 
-      auto skip_coinbase = in_data["coinbase"];
+      if (in_data.contains("coinbase") && 
+              in_data["coinbase"].is_boolean())
+      {
+          skip_coinbase = in_data["coinbase"];
+      }
 
       auto acc = make_account(address, viewkey);
 
@@ -304,6 +313,16 @@ create(nl::json const& in_data)
  }
 
  return nullptr;
+}
+
+bool skip_coinbase() const
+{
+    return m_skip_coinbase;
+}
+
+size_t blocks_no() const
+{
+    return m_blocks_no;
 }
 
 protected:

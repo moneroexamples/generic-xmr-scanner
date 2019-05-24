@@ -7,8 +7,12 @@ macro(add_om_test _TEST_NAME)
             gtest gtest_main
             gmock gmock_main
             XMREG::core
-            nlohmann_json::nlohmann_json
+            Drogon::Drogon
             Boost::fiber)
+
+    target_include_directories(${_TEST_NAME}_tests
+        PRIVATE 
+            ../ext/)
 
     add_test(NAME ${_TEST_NAME}_tests COMMAND ${_TEST_NAME}_tests)
 
@@ -17,5 +21,6 @@ endmacro()
 resource_dir("res")
 
 add_om_test(taskmanager)
+add_om_test(outputsearchtask)
 
 

@@ -24,6 +24,7 @@ add_subdirectory(ext/drogon)
 
 # this find will just give as interface target
 # Drogon::Drogon
+# it does not really searches for its presence
 find_package(Drogon)
 
 find_package(Boost REQUIRED
@@ -49,9 +50,9 @@ target_link_libraries(${PROJECT_NAME}
         
 
 if (${BUILD_TESTS})
-    include_directories(
-        ${CMAKE_SOURCE_DIR}/ext/googletest/googletest/include
-        ${CMAKE_SOURCE_DIR}/ext/googletest/googlemock/include)
+    #include_directories(
+        #${CMAKE_SOURCE_DIR}/ext/googletest/googletest/include
+        #${CMAKE_SOURCE_DIR}/ext/googletest/googlemock/include)
 endif()
 
 if (${BUILD_TESTS})

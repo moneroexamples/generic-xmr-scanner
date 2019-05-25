@@ -41,7 +41,7 @@ matrix:
 
 before_install:
   - sudo apt-get update
-  - sudo apt-get install -y build-essential cmake libboost-all-dev miniupnpc libunbound-dev graphviz doxygen libunwind8-dev pkg-config libssl-dev libcurl4-openssl-dev libgtest-dev libreadline-dev libzmq3-dev libsodium-dev libhidapi-dev libhidapi-libusb0
+  - sudo apt-get install -y build-essential cmake miniupnpc libunbound-dev doxygen libunwind8-dev pkg-config libssl-dev libcurl4-openssl-dev libgtest-dev libreadline-dev libzmq3-dev libsodium-dev libhidapi-dev libhidapi-libusb0
   - git clone --recurse-submodules https://github.com/monero-project/monero.git && cd monero && make  
 
 install:

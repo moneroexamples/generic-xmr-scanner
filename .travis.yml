@@ -12,7 +12,7 @@ addons:
     - gcc-8
     - g++-8
     - clang++-6.0
-    - libboost1.67-all-dev
+    - libboost-all-dev
     - libssl-dev
     - miniupnpc 
     - libunbound-dev 

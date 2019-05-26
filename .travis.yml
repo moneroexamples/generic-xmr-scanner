@@ -18,7 +18,7 @@ addons:
     - libunbound-dev 
     - doxygen 
     - libunwind8-dev 
-    - pkg-config l
+    - pkg-config 
     - libcurl4-openssl-dev 
     - libgtest-dev 
     - libreadline-dev 

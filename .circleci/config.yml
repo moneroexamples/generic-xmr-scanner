@@ -20,9 +20,11 @@ jobs:
                   git clone --recurse-submodules https://github.com/monero-project/monero.git 
                   cd monero
                   USE_SINGLE_BUILDDIR=1 make release -j 2 
+                  cd ..
       - save_cache: 
           key: monero
-          path: monero
+          paths: 
+            - "monero"
       - run:
           name: Get submodules
           command: 'git submodule update --init --recursive'

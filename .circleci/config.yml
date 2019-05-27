@@ -16,10 +16,10 @@ jobs:
           name: Get Last monero commit hash 
           command: |
               export MONERO_COMMIT=`git ls-remote https://github.com/monero-project/monero HEAD | head -n1 | awk '{print $1;}'`
-              echo $MONERO_COMMIT > /tmp/monerocommit
-              cat /tmp/monerocommit
+              echo $MONERO_COMMIT > ~/monerocommit
+              cat ~/monerocommit
       - restore_cache:
-          keys: monero-{{ checksum "/tmp/monerocommit" }}
+          keys: monero-{{ checksum "~/monerocommit" }}
       - run:
           name: Compile Monero
           command: |
@@ -30,7 +30,7 @@ jobs:
                   cd ..
                   fi
       - save_cache: 
-          key: monero-{{ checksum "/tmp/monerocommit" }}
+          key: monero-{{ checksum "~/monerocommit" }}
           paths: 
             - "monero"
       - run:

@@ -5,13 +5,19 @@ jobs:
     docker:
       - image: "ubuntu:18.04"
     steps:
-      - checkout
       - run:
           name: Installing SUDO
           command: 'apt-get update && apt-get install -y sudo && rm -rf /var/lib/apt/lists/*'
       - run:
           name: Installing GCC, git and cmake
           command: 'apt-get update && apt-get install -y git build-essential cmake libboost-all-dev miniupnpc libunbound-dev graphviz doxygen libunwind8-dev pkg-config libssl-dev libcurl4-openssl-dev libgtest-dev libreadline-dev libzmq3-dev libsodium-dev libhidapi-dev libhidapi-libusb0 libjsoncpp-dev uuid-dev'
+      - run:
+          name: Compile Monero
+          command:|
+	              git clone --recurse-submodules https://github.com/monero-project/monero.git 
+			      cd monero 
+			      USE_SINGLE_BUILDDIR=1 make release 
+	  - checkout
       - run:
           name: Get submodules
           command: 'git submodule update --init --recursive'

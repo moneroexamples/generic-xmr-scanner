@@ -22,6 +22,7 @@ jobs:
                   USE_SINGLE_BUILDDIR=1 make release -j 2 
       - save_cache: 
           key: monero
+          path: monero
       - run:
           name: Get submodules
           command: 'git submodule update --init --recursive'

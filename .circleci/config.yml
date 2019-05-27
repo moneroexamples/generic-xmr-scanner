@@ -14,9 +14,12 @@ jobs:
           command: 'apt-get update && apt-get install -y git build-essential cmake libboost-all-dev miniupnpc libunbound-dev graphviz doxygen libunwind8-dev pkg-config libssl-dev libcurl4-openssl-dev libgtest-dev libreadline-dev libzmq3-dev libsodium-dev libhidapi-dev libhidapi-libusb0 libjsoncpp-dev uuid-dev' 
       - run:
           name: Get Last monero commit 
-          command: "MONERO_COMMIT=`git ls-remote https://github.com/monero-project/monero HEAD | head -n1 | awk '{print $1;}'`"
+          command: |
+              export MONERO_COMMIT=`git ls-remote https://github.com/monero-project/monero HEAD | head -n1 | awk '{print $1;}'`
+              echo MONERO_COMMIT > /tmp/monerocommit
+              cat /tmp/monerocommit
       - restore_cache:
-          keys: monero-${MONERO_COMMIT}
+          keys: monero-{{ checksum "/tmp/monerocommit" }}
       - run:
           name: Compile Monero
           command: |
@@ -27,7 +30,7 @@ jobs:
                   cd ..
                   fi
       - save_cache: 
-          key: monero-{$MONERO_COMMIT}
+          key: monero-{{ checksum "/tmp/monerocommit" }}
           paths: 
             - "monero"
       - run:

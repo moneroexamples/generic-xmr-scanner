@@ -14,9 +14,9 @@ jobs:
       - run:
           name: Compile Monero
           command: |
-	              git clone --recurse-submodules https://github.com/monero-project/monero.git 
-			      cd monero 
-			      USE_SINGLE_BUILDDIR=1 make release 
+                  git clone --recurse-submodules https://github.com/monero-project/monero.git 
+                  cd monero
+                  USE_SINGLE_BUILDDIR=1 make release 
 	  - checkout
       - run:
           name: Get submodules

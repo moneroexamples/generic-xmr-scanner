@@ -19,7 +19,7 @@ jobs:
               echo $MONERO_COMMIT > ~/monerocommit
               cat ~/monerocommit
       - restore_cache:
-          keys: monero-{{ checksum "~/monerocommit" }}
+          key: monero-{{ checksum "~/monerocommit" }}
       - run:
           name: Compile Monero
           command: |

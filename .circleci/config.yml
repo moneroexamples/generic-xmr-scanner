@@ -13,7 +13,7 @@ jobs:
           name: Installing GCC, git and cmake
           command: 'apt-get update && apt-get install -y git build-essential cmake libboost-all-dev miniupnpc libunbound-dev graphviz doxygen libunwind8-dev pkg-config libssl-dev libcurl4-openssl-dev libgtest-dev libreadline-dev libzmq3-dev libsodium-dev libhidapi-dev libhidapi-libusb0 libjsoncpp-dev uuid-dev' 
       - run:
-          name: Get Last monero commit
+          name: Get Last monero commit 
           command: "MONERO_COMMIT=`git ls-remote https://github.com/monero-project/monero HEAD | head -n1 | awk '{print $1;}'`"
       - restore_cache:
           keys: monero-${MONERO_COMMIT}

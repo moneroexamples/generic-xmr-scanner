@@ -16,6 +16,9 @@ jobs:
           name: Install CMAKE
           command: 'apt-get update && sudo apt-get install -y cmake'
       - run:
+          name: Get submodules
+          command: 'git submodule update --init --recursive'
+      - run:
           name: Creating Build Files
           command: 'cmake -H. -Bbuild'
       - run:

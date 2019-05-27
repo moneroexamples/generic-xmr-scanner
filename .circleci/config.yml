@@ -17,10 +17,12 @@ jobs:
       - run:
           name: Compile Monero
           command: |
+                  if [ ! -d "monero" ]; then 
                   git clone --recurse-submodules https://github.com/monero-project/monero.git 
                   cd monero
                   USE_SINGLE_BUILDDIR=1 make release -j 2 
                   cd ..
+                  fi
       - save_cache: 
           key: monero
           paths: 
@@ -30,7 +32,7 @@ jobs:
           command: 'git submodule update --init --recursive'
       - run:
           name: Creating Build Files
-          command: 'cmake -H. -Bbuild'
+          command: 'cmake -DMONERO_DIR=/root/project/monero -H. -Bbuild'
       - run:
           name: Creating Binary Files
           command: 'cmake --build build'

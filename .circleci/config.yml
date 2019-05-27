@@ -35,4 +35,4 @@ jobs:
           command: 'cmake -DMONERO_DIR=/root/project/monero -H. -Bbuild'
       - run:
           name: Creating Binary Files
-          command: 'cmake --build build'
+          command: 'cmake --build build -- -j 2'

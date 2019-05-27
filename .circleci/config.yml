@@ -26,7 +26,7 @@ jobs:
                   if [ ! -d "monero" ]; then 
                   git clone --recurse-submodules https://github.com/monero-project/monero.git 
                   cd monero
-                  USE_SINGLE_BUILDDIR=1 make release -j 2 
+                  USE_SINGLE_BUILDDIR=1 make release -j 1 
                   cd ..
                   fi
       - save_cache: 

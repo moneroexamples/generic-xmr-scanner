@@ -31,7 +31,7 @@ jobs:
           name: Get submodules
           command: 'git submodule update --init --recursive'
       - run:
-          name: Creating Build Files
+          name: Creating Build Files 
           command: 'cmake -DMONERO_DIR=/root/project/monero -H. -Bbuild'
       - run:
           name: Creating Binary Files

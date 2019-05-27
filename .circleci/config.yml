@@ -13,7 +13,7 @@ jobs:
           command: 'apt-get update && apt-get install -y git build-essential cmake libboost-all-dev miniupnpc libunbound-dev graphviz doxygen libunwind8-dev pkg-config libssl-dev libcurl4-openssl-dev libgtest-dev libreadline-dev libzmq3-dev libsodium-dev libhidapi-dev libhidapi-libusb0 libjsoncpp-dev uuid-dev'
       - run:
           name: Compile Monero
-          command:|
+          command: |
 	              git clone --recurse-submodules https://github.com/monero-project/monero.git 
 			      cd monero 
 			      USE_SINGLE_BUILDDIR=1 make release 

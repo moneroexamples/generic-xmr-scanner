@@ -16,7 +16,7 @@ jobs:
           name: Get Last monero commit hash 
           command: |
               export MONERO_COMMIT=`git ls-remote https://github.com/monero-project/monero HEAD | head -n1 | awk '{print $1;}'`
-              echo MONERO_COMMIT > /tmp/monerocommit
+              echo $MONERO_COMMIT > /tmp/monerocommit
               cat /tmp/monerocommit
       - restore_cache:
           keys: monero-{{ checksum "/tmp/monerocommit" }}

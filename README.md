@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/moneroexamples/generic-xmr-scanner.svg?style=svg)](https://circleci.com/gh/moneroexamples/generic-xmr-scanner)
+Build: [![CircleCI](https://circleci.com/gh/moneroexamples/generic-xmr-scanner/tree/travis.svg?style=svg)](https://circleci.com/gh/moneroexamples/generic-xmr-scanner/tree/travis)
 
 ## Generic Monero Scanner of Monero blockchain
 

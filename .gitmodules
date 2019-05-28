@@ -9,4 +9,4 @@
 	url = https://github.com/moneroexamples/fiberpool.git
 [submodule "ext/drogon"]
 	path = ext/drogon
-	url = https://github.com/moneroexamples/drogon.git
+	url = https://github.com/an-tao/drogon.git

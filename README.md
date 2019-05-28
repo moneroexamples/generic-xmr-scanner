@@ -1,5 +1,3 @@
-Build: [![CircleCI](https://circleci.com/gh/moneroexamples/generic-xmr-scanner/tree/travis.svg?style=svg)](https://circleci.com/gh/moneroexamples/generic-xmr-scanner/tree/travis)
-
 ## Generic Monero Scanner of Monero blockchain
 
 The project aims to develop generic online scanner/searcher for Monero. Its possible capability includes searching for:
@@ -44,6 +42,7 @@ The key technologies used in the scanner are:
 
 ## Example compilation on Ubuntu 18.04
 
+[![CircleCI](https://circleci.com/gh/moneroexamples/generic-xmr-scanner/tree/travis.svg?style=svg)](https://circleci.com/gh/moneroexamples/generic-xmr-scanner/tree/travis)
 
 #### Monero download and compilation
 

@@ -7,3 +7,6 @@
 [submodule "ext/drogon"]
 	path = ext/drogon
 	url = https://github.com/an-tao/drogon.git
+[submodule "ext/xmregcore"]
+	path = ext/xmregcore
+	url = https://github.com/moneroexamples/xmregcore.git

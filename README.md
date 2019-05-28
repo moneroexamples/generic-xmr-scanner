@@ -42,7 +42,7 @@ The key technologies used in the scanner are:
 
 ## Example compilation on Ubuntu 18.04
 
-[![CircleCI](https://circleci.com/gh/moneroexamples/generic-xmr-scanner/tree/travis.svg?style=svg)](https://circleci.com/gh/moneroexamples/generic-xmr-scanner/tree/travis)
+[![CircleCI](https://circleci.com/gh/moneroexamples/generic-xmr-scanner.svg?style=svg)](https://circleci.com/gh/moneroexamples/generic-xmr-scanner)
 
 #### Monero download and compilation
 

@@ -66,7 +66,6 @@ LOG_INFO << "FiberPool will use " << fiberpool_threads_no
 // to manage fibers. all tasks submitted to the scanner
 // will run as fibers in the pool.
 FiberPoolSharing<> fiber_pool(fiberpool_threads_no);
-//FiberPoolStealing<> fiber_pool(fiberpool_threads_no);
 
 // the manager will keep track of all search tasks submitted 
 // to our service. This is main scope variable, so we are just

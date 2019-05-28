@@ -12,19 +12,19 @@ list(APPEND CMAKE_MODULE_PATH
     "${CMAKE_CURRENT_LIST_DIR}/ext/xmregcore/cmake"
     "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
-#include(MyUtils)
-
 # add XMREGCORE submodule
 set(BUILD_XMREGCORE_TESTS OFF CACHE INTERNAL "")
 add_subdirectory(ext/xmregcore)
 
-set(BUILD_CTL FALSE CACHE INTERNAL "")
 set(BUILD_ORM FALSE CACHE INTERNAL "")
+set(BUILD_CTL FALSE CACHE INTERNAL "")
+set(BUILD_EXAMPLES FALSE CACHE INTERNAL "")
 add_subdirectory(ext/drogon)
 
 # this find will just give as interface target
 # Drogon::Drogon
-# it does not really searches for its presence
+# it does not really checks for drogon libraries presence
+# it assumes they exists
 find_package(Drogon)
 
 find_package(Boost REQUIRED
@@ -47,13 +47,6 @@ target_link_libraries(${PROJECT_NAME}
         Drogon::Drogon  
         Boost::fiber
         stdc++fs)
-        
-
-if (${BUILD_TESTS})
-    #include_directories(
-        #${CMAKE_SOURCE_DIR}/ext/googletest/googletest/include
-        #${CMAKE_SOURCE_DIR}/ext/googletest/googlemock/include)
-endif()
 
 if (${BUILD_TESTS})
     enable_testing()

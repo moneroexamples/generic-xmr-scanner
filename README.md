@@ -23,7 +23,7 @@ The idea is based on two projects:
  - [onion-monero-viewer](https://github.com/moneroexamples/onion-monero-viewer)
  - [transactions-export](https://github.com/moneroexamples/transactions-export)
 
-The first project allowed for online identification of outputs 
+The first project allowed for online identification of outputs      
 associated with given address and viewkey. The second project additionally
 searched for transactions which use the outputs as decoys/ring members. 
 However, the first project got discontinued, while the second is a
@@ -42,6 +42,7 @@ The key technologies used in the scanner are:
 
 ## Example compilation on Ubuntu 18.04
 
+[![CircleCI](https://circleci.com/gh/moneroexamples/generic-xmr-scanner/tree/travis.svg?style=svg)](https://circleci.com/gh/moneroexamples/generic-xmr-scanner/tree/travis)
 
 #### Monero download and compilation
 

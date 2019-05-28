@@ -1,6 +1,3 @@
-[submodule "ext/xmregcore"]
-	path = ext/xmregcore
-	url = https://github.com/moneroexamples/xmregcore.git
 [submodule "ext/googletest"]
 	path = ext/googletest
 	url = https://github.com/google/googletest.git

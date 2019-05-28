@@ -7,3 +7,6 @@
 [submodule "ext/fiberpool"]
 	path = ext/fiberpool
 	url = https://github.com/moneroexamples/fiberpool.git
+[submodule "ext/drogon"]
+	path = ext/drogon
+	url = https://github.com/moneroexamples/drogon.git

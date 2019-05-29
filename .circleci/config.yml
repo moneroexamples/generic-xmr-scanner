@@ -10,7 +10,8 @@ jobs:
           name: Installing GCC, git and cmake
           command: |
               apt-get update 
-              apt-get install -yqq --no-install-recommends git cmake gcc g++ curl \
+              apt-get install -yqq --no-install-recommends software-properties-common \
+                 git cmake gcc g++ curl \
                  libssl-dev libsodium-dev libzmq3-dev pkg-config libpgm-dev \
                  libboost-program-options-dev libboost-chrono-dev libboost-filesystem-dev \
                  libboost-serialization-dev libboost-regex-dev  libboost-locale-dev \

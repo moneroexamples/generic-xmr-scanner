@@ -5,19 +5,19 @@ jobs:
     docker:
       - image: "ubuntu:18.04"
     steps:
-      - checkout
       - run:
           name: Installing GCC, git and cmake
           command: |
               apt-get update 
               apt-get install -yqq --no-install-recommends software-properties-common \
                  git cmake gcc g++ curl libunbound-dev libunwind8-dev libcurl4-openssl-dev \
+                 libhidapi-dev \
                  libssl-dev libsodium-dev libzmq3-dev pkg-config libpgm-dev \
                  libboost-program-options-dev libboost-chrono-dev libboost-filesystem-dev \
                  libboost-serialization-dev libboost-regex-dev  libboost-locale-dev \
                  libboost-thread-dev libboost-fiber-dev \
                  libjsoncpp-dev uuid-dev
-
+      - checkout
       - run:
           name: Get Last monero commit hash 
           command: |

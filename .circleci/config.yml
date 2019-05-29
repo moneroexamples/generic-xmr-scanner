@@ -25,21 +25,20 @@ jobs:
               echo "$MONERO_COMMIT" > ~/monerocommit
               cat ~/monerocommit
       - restore_cache:
-          key: monero-{{ checksum "~/monerocommit" }}
+          key: v01-monero-{{ checksum "~/monerocommit" }}
       - run:
           name: Compile Monero
           command: |
                   if [ ! -d "monero" ]; then 
                   git clone --recurse-submodules https://github.com/monero-project/monero.git 
                   cd monero
-                  USE_SINGLE_BUILDDIR=1 make release -j 1 
                   mkdir -p build/release && cd build/release
                   cmake -D CMAKE_BUILD_TYPE=Release ../..
-                  cmake --build . --target cryptonote_protocol -- -j 2
+                  cmake --build . --target cryptonote_core -- -j 2
                   cd ../..
                   fi
       - save_cache: 
-          key: monero-{{ checksum "~/monerocommit" }}
+          key: v01-monero-{{ checksum "~/monerocommit" }}
           paths: 
             - "monero"
       - run:

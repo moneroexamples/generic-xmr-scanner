@@ -7,11 +7,16 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Installing SUDO
-          command: 'apt-get update && apt-get install -y sudo && rm -rf /var/lib/apt/lists/*'
-      - run:
           name: Installing GCC, git and cmake
-          command: 'apt-get update && apt-get install -y git build-essential cmake libboost-all-dev miniupnpc libunbound-dev graphviz doxygen libunwind8-dev pkg-config libssl-dev libcurl4-openssl-dev libgtest-dev libreadline-dev libzmq3-dev libsodium-dev libhidapi-dev libhidapi-libusb0 libjsoncpp-dev uuid-dev' 
+          command: |
+              apt-get update 
+              apt-get install -yqq --no-install-recommends git cmake gcc g++ \
+                 libssl-dev libsodium-dev libzmq3-dev pkg-config libpgm-dev \
+                 libboost-program-options-dev libboost-chrono-dev libboost-filesystem-dev \
+                 libboost-serialization-dev libboost-regex-dev  libboost-locale-dev \
+                 libboost-thread-dev libboost-fiber-dev \
+                 libjsoncpp-dev uuid-dev
+
       - run:
           name: Get Last monero commit hash 
           command: |

@@ -75,7 +75,7 @@ struct Task : public ISearchObserver
             }
         }
     }
-
+    
     /**
      * This method is called each time the task
      * finds something. This way we are obtaining

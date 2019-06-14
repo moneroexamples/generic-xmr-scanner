@@ -1,7 +1,8 @@
 macro(add_om_test _TEST_NAME)
 
     add_executable(${_TEST_NAME}_tests
-            ${_TEST_NAME}_tests.cpp)
+            ${_TEST_NAME}_tests.cpp
+            ../ext/xmregcore/tests/JsonTx.cpp)
 
     target_link_libraries(${_TEST_NAME}_tests
             gtest gtest_main
@@ -18,7 +19,7 @@ macro(add_om_test _TEST_NAME)
 
 endmacro()
 
-resource_dir("res")
+resource_dir("../ext/xmregcore/tests/res/tx")
 
 add_om_test(taskmanager)
 add_om_test(outputsearchtask)

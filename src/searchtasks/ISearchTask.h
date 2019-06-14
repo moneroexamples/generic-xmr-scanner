@@ -70,7 +70,6 @@ public:
         observers.remove(observer);
     }
 
-    
     auto get_results(size_t msg_idx) 
     {
         //std::lock_guard lk {m_mtx_results};
@@ -80,6 +79,11 @@ public:
                             results.end()));
     }
 
+    auto get_results() 
+    {
+		return 	get_results(0); 
+    }
+    
     void set_microcore(MicroCore const* _mcore) 
     {
         m_core = _mcore;

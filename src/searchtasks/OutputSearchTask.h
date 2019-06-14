@@ -40,6 +40,7 @@ to_json(nl::json& j, Output::info const& info)
     j = nl::json {
         {"public_key", pod_to_hex(info.pub_key)},
         {"amount", std::to_string(info.amount)},
+        {"index", info.idx_in_tx},
         {"subaddr_idx", subaddr_idx}
         
     };
@@ -115,13 +116,12 @@ void operator()() override
                       << e.what();
             break;
         }
+        
+        //cout << "blocks no: " << blocks.size() << '\n';
 
         if (blocks.empty())
-        {
             break;
-        }
         
-    
         auto time2 = chrono::system_clock::now();
 
         if (time2 - time1 > 2s || h2 == last_block_height)
@@ -162,6 +162,8 @@ void operator()() override
 
             vector<transaction> txs;
 
+            //cout << "i: " << i << '\n';
+
             txs.reserve(blk.tx_hashes.size() 
                         + 1 /*for miner tx*/);
 
@@ -171,6 +173,8 @@ void operator()() override
                     txs, missed_txs);
 
             (void) missed_txs;
+
+            //cout << "txs no: " << txs.size() << '\n';
 
             if (!m_skip_coinbase)
                 txs.push_back(blk.miner_tx);
@@ -203,9 +207,13 @@ void operator()() override
 
                 auto const& outputs_found 
                     = identifier.get<0>()->get();
+                    
+                //cout << "outputs_found: " << outputs_found.size() <<'\n';
 
                 if (!outputs_found.empty())
                 {
+                    //cout << "outputs_found: " << outputs_found <<'\n';
+
                     auto tx_hash = pod_to_hex(
                             cryptonote::get_transaction_hash(tx)); 
 

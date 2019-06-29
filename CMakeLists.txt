@@ -48,6 +48,10 @@ target_link_libraries(${PROJECT_NAME}
         Boost::fiber
         stdc++fs)
 
+# copy scanners confing files into build folder
+configure_files(${CMAKE_CURRENT_SOURCE_DIR}/config
+                ${CMAKE_CURRENT_BINARY_DIR}/config)
+
 if (${BUILD_TESTS})
     enable_testing()
     add_subdirectory(ext/googletest)

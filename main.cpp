@@ -4,6 +4,7 @@
 #include "src/SearchTaskManager.h"
 #include "src/controllers/SearchCtrl.h"
 #include "src/controllers/InfoCtrl.h"
+#include "src/config/DefaultAddresses.h"
 #include "src/utils.hpp"
 
 #include <boost/fiber/all.hpp> 
@@ -35,6 +36,12 @@ auto blockchain_path = any_cast<string>(
 auto port = any_cast<size_t>(options["port"]);
 auto fiberpool_threads_no = any_cast<size_t>(
             options["fiberpool_threads"]);
+
+// reads default addresses to be shown by 
+// the frontend for the confing file provided
+
+xmreg::DefaultAddresses default_addresses {
+    "./config/default_addresses.json"};
 
 // setup monero's own logger
 mlog_configure(mlog_get_default_log_path(""), true);
@@ -92,8 +99,9 @@ LOG_INFO << "SearchWebSocketCtrl registered";
 
 // create regular http controller. It will provide
 // initial information, e.g., networy type, to the 
-// frontend.
-auto info_ctrl = make_shared<InfoCtrl>(InfoCtrl(&task_manager));
+// frontend as well as the list of default addresses.
+auto info_ctrl = make_shared<InfoCtrl>(
+        InfoCtrl(&task_manager, &default_addresses));
 app().registerController(info_ctrl);
 
 LOG_INFO << "InfoCtrl registered";

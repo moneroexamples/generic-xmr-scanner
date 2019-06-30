@@ -34,7 +34,9 @@ add_executable(${PROJECT_NAME}
         main.cpp
         src/utils.cpp
         src/controllers/SearchCtrl.cpp
-        src/controllers/InfoCtrl.cpp) 
+        src/controllers/InfoCtrl.cpp
+        src/config/IConfigReader.cpp
+        src/config/DefaultAddresses.cpp) 
 
 target_include_directories(${PROJECT_NAME}
     PRIVATE 

@@ -22,6 +22,11 @@ InfoCtrl::status(HttpRequestPtr const& req,
    std::function<void (const HttpResponsePtr &)>&& callback)
 {
     auto jstatus = m_task_manager->status();
+    
+    size_t network = jstatus.j["data"]["network"]; 
+
+    jstatus.j["data"]["addresses"] 
+        = m_default_addresses->get(network);
 
     make_json_response(std::move(jstatus), 
                        std::move(callback));
@@ -35,7 +40,7 @@ InfoCtrl::default_addresses(HttpRequestPtr const& req,
     auto status = m_task_manager->status();
     size_t network = status.j["data"]["network"]; 
     auto addresses = m_default_addresses->get(network);
-
+    
     if (addresses.empty())
     {
         make_json_response(

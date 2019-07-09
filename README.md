@@ -1,4 +1,4 @@
-## Generic Monero Scanner of Monero blockchain
+## Generic Monero Scanner
 
 The project aims to develop generic online scanner/searcher for Monero. Its possible capability includes searching for:
 

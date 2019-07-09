@@ -33,19 +33,26 @@ auto net_type = any_cast<network_type>(
                 options["nettype"]);
 auto blockchain_path = any_cast<string>(
                 options["blockchain_path"]);
+auto config_path = any_cast<string>(
+                options["config_path"]);
+auto default_addresses_path = any_cast<string>(
+                options["default_addresses_path"]);
 auto port = any_cast<size_t>(options["port"]);
 auto fiberpool_threads_no = any_cast<size_t>(
             options["fiberpool_threads"]);
 
-// reads default addresses to be shown by 
-// the frontend for the confing file provided
-
-xmreg::DefaultAddresses default_addresses {
-    "./config/default_addresses.json"};
-
 // setup monero's own logger
 mlog_configure(mlog_get_default_log_path(""), true);
 mlog_set_log("1");
+
+if (!filesystem::exists(blockchain_path))
+{
+    cerr << blockchain_path 
+              << "does not exist!\n";
+    return EXIT_FAILURE;
+}
+
+LOG_INFO << "Blockchain path: " << blockchain_path;
 
 // initialize and create instance of MicroCore
 // which is going to provide direct access to monero
@@ -60,6 +67,22 @@ auto current_height = mcore.get_core()
 
 LOG_INFO << "Current blockchain height: " 
          << current_height;
+
+// reads default addresses to be shown by 
+// the frontend for the confing file provided
+
+if (!filesystem::exists(default_addresses_path))
+{
+    cerr << default_addresses_path 
+              << "does not exist!\n";
+    return EXIT_FAILURE;
+}
+
+LOG_INFO << "Using default addres from "
+         << filesystem::absolute(default_addresses_path);
+
+xmreg::DefaultAddresses default_addresses {
+           default_addresses_path};
 
 if (fiberpool_threads_no == 0)
 {

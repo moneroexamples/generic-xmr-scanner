@@ -116,6 +116,8 @@ void operator()() override
                       << e.what();
             break;
         }
+
+        //cout << "h1,h2 = " << h1 << ',' << h2 <<  '\n';
         
         //cout << "blocks no: " << blocks.size() << '\n';
 

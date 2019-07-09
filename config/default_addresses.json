@@ -35,6 +35,11 @@
     ],
     "stagenet": [
         {
+            "name": "Stagenet wallet 9",
+            "address": "56bY2v2RJZNEvrKdYuwG73Q2idshQyGc5fV74BZqoVv72MPSBEakPbfWYtQH4PLGhk3uaCjNZ81XJ7o9pimAXzQFCv7bxxf",
+            "viewkey": "9ef8e116d2c774b207a2dd6a234dab8f5d54becc04aa26ccbd6f1f67e8427308"
+        },
+        {
             "name": "Stagenet wallet 1",
             "address": "56heRv2ANffW1Py2kBkJDy8xnWqZsSrgjLygwjua2xc8Wbksead1NK1ehaYpjQhymGK4S8NPL9eLuJ16CuEJDag8Hq3RbPV", 
             "viewkey": "b45e6f38b2cd1c667459527decb438cdeadf9c64d93c8bccf40a9bf98943dc09"

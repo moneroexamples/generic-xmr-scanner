@@ -3,6 +3,7 @@
 
 #include "searchtasks/OutputSearchTask.h"
 #include "searchtasks/TestSearchTask.h"
+#include "config/DefaultConfig.h"
 #include "utility/traits.hpp"
 
 #include "FiberPool.hpp"
@@ -133,8 +134,10 @@ public:
 
 explicit SearchTaskManager
     (MicroCore* _mcore, 
-     FiberPool::FiberPoolSharing<>* _fpool)
-    : m_core {_mcore}, m_fpool {_fpool}
+     FiberPool::FiberPoolSharing<>* _fpool,
+     DefaultConfig* _config)
+    : m_core {_mcore}, m_fpool {_fpool},
+      m_config {_config}
 {}
 
 
@@ -326,6 +329,11 @@ auto status() const
         });
 }
 
+auto* config() const
+{
+    return m_config;
+}
+
 
 private:
 
@@ -337,6 +345,8 @@ MicroCore const* m_core {nullptr};
      
 //FiberPool::FiberPoolStealing<>* m_fpool {nullptr};
 FiberPool::FiberPoolSharing<>* m_fpool {nullptr};
+
+DefaultConfig* m_config;
 
 };
 }

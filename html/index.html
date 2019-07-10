@@ -45,9 +45,9 @@
 	   <label for="timespan">Start scannig from</label>
 		<select id="timespan">
 		  <optgroup label="Since when?">
-			<option selected="selected" value="1">One day ago</option>
+			<!--<option selected="selected" value="1">One day ago</option>
 			<option value="2">One week ago</option>
-			<option value="3">One month ago</option>
+            <option value="3">One month ago</option>-->
 		  </optgroup>
 		</select>
         </p>
@@ -206,6 +206,31 @@ function setup_known_addresses(jstatus)
             address.value = avaliable_addresses[selected_value].address;   
             viewkey.value = avaliable_addresses[selected_value].viewkey;   
         });
+
+    // now setup scanning_from
+    
+
+    var timespan = document.getElementById("timespan");
+
+    var scanning_from_options = jstatus["scanning_from"];
+
+    for (var i = 0; i < scanning_from_options.length; i++)
+    {
+        var scanning_opt = scanning_from_options[i];
+        
+        var opt = document.createElement('option');
+
+        opt.value = scanning_opt[1];
+        opt.innerHTML = scanning_opt[0];
+
+        if (i === 0)
+            opt.selected = true;
+        
+        timespan.childNodes[1].appendChild(opt);
+
+        console.log(scanning_opt);
+    }
+
 }
 
 function setup_submit_btn()

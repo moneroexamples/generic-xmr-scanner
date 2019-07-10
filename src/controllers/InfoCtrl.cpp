@@ -28,6 +28,9 @@ InfoCtrl::status(HttpRequestPtr const& req,
     jstatus.j["data"]["addresses"] 
         = m_default_addresses->get(network);
 
+    jstatus.j["data"]["scanning_from"]
+        = m_task_manager->config()->scannig_from();
+
     make_json_response(std::move(jstatus), 
                        std::move(callback));
 }

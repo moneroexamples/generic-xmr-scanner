@@ -5,7 +5,6 @@
 #include "src/controllers/SearchCtrl.h"
 #include "src/controllers/InfoCtrl.h"
 #include "src/config/DefaultAddresses.h"
-#include "src/config/DefaultConfig.h"
 #include "src/utils.hpp"
 
 #include <boost/fiber/all.hpp> 
@@ -115,7 +114,8 @@ FiberPoolSharing<> fiber_pool(fiberpool_threads_no);
 // going to keep passing NON-OWNING raw pointer to it 
 // into services that need to use it. 
 // Basically any raw pointer is NON-OWNING!
-auto task_manager = SearchTaskManager(&mcore, &fiber_pool);
+auto task_manager = SearchTaskManager(
+        &mcore, &fiber_pool, &default_config);
 
 // start search tasks management loop. It mostly just
 // checks periodically for finished tasks and lost

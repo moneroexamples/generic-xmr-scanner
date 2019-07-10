@@ -15,7 +15,7 @@ public:
     using IConfigReader::IConfigReader;
 
     nl::json 
-    get(string nettype);
+    get(string nettype) override;
     
     nl::json 
     get(size_t nettype);

@@ -9,19 +9,14 @@ using namespace std;
 namespace nl = nlohmann; 
 
 nl::json 
-DefaultAddresses::get(string nettype)
+DefaultAddresses::get(string nettype)   
 {
     if (!read())
     {
         return {};
     }
 
-    if (!config_data.contains(nettype))
-    {
-        return {};
-    }
-
-    return config_data[nettype];
+    return IConfigReader::get(nettype);
 }
     
 nl::json 

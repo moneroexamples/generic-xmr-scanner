@@ -47,4 +47,16 @@ IConfigReader::read()
     return false;
 }
 
+nl::json 
+IConfigReader::get(string _filedname) 
+{
+    if (!config_data.contains(_filedname))
+    {
+        cerr << _filedname << " not found in json\n";
+        return {};
+    }
+
+    return config_data[_filedname];
+
+}
 }

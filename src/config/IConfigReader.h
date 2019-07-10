@@ -21,6 +21,9 @@ public:
 protected:
     bool read();
 
+    virtual nl::json 
+    get(string _filedname);
+
     string filepath;
     nl::json config_data;
 };

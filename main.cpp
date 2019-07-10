@@ -5,6 +5,7 @@
 #include "src/controllers/SearchCtrl.h"
 #include "src/controllers/InfoCtrl.h"
 #include "src/config/DefaultAddresses.h"
+#include "src/config/DefaultConfig.h"
 #include "src/utils.hpp"
 
 #include <boost/fiber/all.hpp> 
@@ -70,19 +71,31 @@ LOG_INFO << "Current blockchain height: "
 
 // reads default addresses to be shown by 
 // the frontend for the confing file provided
-
 if (!filesystem::exists(default_addresses_path))
 {
     cerr << default_addresses_path 
-              << "does not exist!\n";
+         << "does not exist!\n";
     return EXIT_FAILURE;
 }
 
-LOG_INFO << "Using default addres from "
+if (!filesystem::exists(config_path))
+{
+    cerr << config_path << "does not exist!\n";
+    return EXIT_FAILURE;
+}
+
+LOG_INFO << "Using default addresses from "
          << filesystem::absolute(default_addresses_path);
 
 xmreg::DefaultAddresses default_addresses {
            default_addresses_path};
+
+LOG_INFO << "Using default config from "
+         << filesystem::absolute(config_path);
+
+xmreg::DefaultConfig default_config {config_path};
+
+cout << default_config.scannig_from().dump(4) << '\n'; 
 
 if (fiberpool_threads_no == 0)
 {

@@ -1,9 +1,6 @@
-
 #include "InfoCtrl.h"
 
 #include "../SearchTaskManager.h"
-
-//#include "HttpResponse.h"
 
 
 namespace xmreg
@@ -29,7 +26,8 @@ InfoCtrl::status(HttpRequestPtr const& req,
         = m_default_addresses->get(network);
 
     jstatus.j["data"]["scanning_from"]
-        = m_task_manager->config()->scannig_from();
+        = m_task_manager->config()
+            ->get("scanning_from");
 
     make_json_response(std::move(jstatus), 
                        std::move(callback));

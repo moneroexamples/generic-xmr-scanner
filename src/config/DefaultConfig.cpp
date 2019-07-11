@@ -18,10 +18,11 @@ DefaultConfig::DefaultConfig(string _filepath)
     }
 }
 
-nl::json 
+vector<ScanningFrom>
 DefaultConfig::scannig_from() 
 {
-    return get("scanning_from");
+    return get("scanning_from")
+        .get<vector<ScanningFrom>>();
 }
 
 }

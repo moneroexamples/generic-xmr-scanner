@@ -94,8 +94,6 @@ LOG_INFO << "Using default config from "
 
 xmreg::DefaultConfig default_config {config_path};
 
-cout << default_config.scannig_from().dump(4) << '\n'; 
-
 if (fiberpool_threads_no == 0)
 {
     fiberpool_threads_no = no_of_defualt_threads();

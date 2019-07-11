@@ -18,11 +18,11 @@ class IConfigReader
 public:
     IConfigReader(string _filepath);
     
-protected:
-    bool read();
-
     virtual nl::json 
     get(string _filedname);
+
+protected:
+    bool read();
 
     string filepath;
     nl::json config_data;

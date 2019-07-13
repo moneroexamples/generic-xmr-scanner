@@ -3,7 +3,8 @@
   [
       ["One day", 720],
       ["One week", 5400],
-      ["One month", 21600]
+      ["One month", 21600],
+      ["Six months", 129600]
   ],
   "blocks_search_lookahead"            : 10,
   "ssl" :

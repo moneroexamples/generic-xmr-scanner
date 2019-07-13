@@ -330,9 +330,15 @@ function open()
                 var current_block = data["progress"]["current_block"];
                 var blockchain_height 
                    = data["progress"]["blockchain_height"];
+                var timestamp = formatDate(
+                                   new Date(
+                                   data["progress"]["timestamp"]*1000)
+                                    , '%Y-%M-%d %H:%m:%s');
+
 
                 status_info.innerHTML = current_block 
-                                + "/" + blockchain_height;
+                                + "/" + blockchain_height
+                                + " (scanning blocks from " + timestamp + ")";
                 return;
            }
 

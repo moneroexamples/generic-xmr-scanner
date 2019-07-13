@@ -144,7 +144,9 @@ void operator()() override
                          {
                            {"current_block", h1},
                            {"blockchain_height", 
-                                last_block_height}
+                                last_block_height},
+                           {"timestamp", 
+                                blocks.front().timestamp}
                          }
                         }});
             

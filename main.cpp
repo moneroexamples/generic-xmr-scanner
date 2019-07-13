@@ -94,6 +94,25 @@ LOG_INFO << "Using default config from "
 
 xmreg::DefaultConfig default_config {config_path};
 
+// check if ssl is enabled
+auto ssl = default_config.ssl();
+
+if (ssl.enabled)
+{
+    // check if given server key and crt files exist
+    if (!std::filesystem::exists(ssl.key))
+    {
+        cerr << ssl.key << " ssl-key does not exist!\n";
+        return EXIT_FAILURE;
+    }
+    
+    if (!std::filesystem::exists(ssl.crt))
+    {
+        cerr << ssl.crt << " ssl-crt does not exist!\n";
+        return EXIT_FAILURE;
+    }
+}
+
 if (fiberpool_threads_no == 0)
 {
     fiberpool_threads_no = no_of_defualt_threads();
@@ -144,7 +163,19 @@ LOG_INFO << "Listening at 127.0.0.1:" << port;
 
 app().setThreadNum(1);
 app().setIdleConnectionTimeout(1h);
-app().addListener("0.0.0.0", port);
+
+if (ssl.enabled)
+{
+    app().addListener("0.0.0.0", port, true,
+                      ssl.crt, ssl.key);
+    
+    LOG_INFO << "SSL enabled.";
+}
+else
+{
+    app().addListener("0.0.0.0", port);
+    LOG_INFO << "SSL not enabled.";
+}
 
 app().run();
 

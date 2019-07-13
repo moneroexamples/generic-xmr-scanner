@@ -300,6 +300,9 @@ void managment_loop()
 
     for(;;)
     {
+        if (finish_managment_loop)
+            return;
+
         clean_up_tasks();
         boost::this_fiber::sleep_for(5s);
         std::thread::id new_thread 
@@ -316,7 +319,6 @@ void managment_loop()
 
             std::cout << buffer.str() << std::flush;
          }
-
     }
 }
 
@@ -334,6 +336,10 @@ auto* config() const
     return m_config;
 }
 
+void finish()
+{
+    finish_managment_loop = true;
+}
 
 private:
 
@@ -345,6 +351,8 @@ MicroCore const* m_core {nullptr};
      
 //FiberPool::FiberPoolStealing<>* m_fpool {nullptr};
 FiberPool::FiberPoolSharing<>* m_fpool {nullptr};
+
+atomic<bool> finish_managment_loop {false};
 
 DefaultConfig* m_config;
 

@@ -6,13 +6,12 @@
       ["One month", 21600],
       ["Six months", 129600]
   ],
-  "blocks_search_lookahead"            : 10,
+  "blocks_search_lookahead"            : 100,
   "ssl" :
   {
     "enable" : false,
     "_comment": "below are example paths to crt and key files need to be given",
-    "ssl-key": "file:///tmp/server.key",
-    "ssl-crt": "file:///tmp/server.crt",
-    "dh-pem" : "file:///tmp/dh2048.pem"
+    "ssl-key": "/path/to/server.key",
+    "ssl-crt": "/path/to/server.crt"
   }
 }

@@ -46,13 +46,32 @@ from_json(nl::json const& j, vector<ScanningFrom>& sfs)
     }
 }
 
+
+struct SSLConfig
+{
+    bool enabled {false};
+    string key {};
+    string crt {};
+};
+
+inline void 
+from_json(nl::json const& j, SSLConfig& ssl)
+{
+    ssl.enabled = j["enable"].get<bool>();
+    ssl.key = j["ssl-key"].get<string>();
+    ssl.crt = j["ssl-crt"].get<string>();
+}
+
 class DefaultConfig: public IConfigReader
 {
 public:
     uint64_t blocks_lookahead {10};
 
     DefaultConfig(string _filepath); 
+
     vector<ScanningFrom> scannig_from();
+
+    SSLConfig ssl();
 };
 
 }

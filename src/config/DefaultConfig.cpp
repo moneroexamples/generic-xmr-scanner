@@ -30,4 +30,10 @@ DefaultConfig::scannig_from()
         .get<vector<ScanningFrom>>();
 }
 
+SSLConfig
+DefaultConfig::ssl()
+{
+    return get("ssl").get<SSLConfig>();
+}
+
 }

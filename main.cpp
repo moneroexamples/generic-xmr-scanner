@@ -4,6 +4,7 @@
 #include "src/SearchTaskManager.h"
 #include "src/controllers/SearchCtrl.h"
 #include "src/controllers/InfoCtrl.h"
+#include "src/config/DefaultAddresses.h"
 #include "src/utils.hpp"
 
 #include <boost/fiber/all.hpp> 
@@ -32,6 +33,10 @@ auto net_type = any_cast<network_type>(
                 options["nettype"]);
 auto blockchain_path = any_cast<string>(
                 options["blockchain_path"]);
+auto config_path = any_cast<string>(
+                options["config_path"]);
+auto default_addresses_path = any_cast<string>(
+                options["default_addresses_path"]);
 auto port = any_cast<size_t>(options["port"]);
 auto fiberpool_threads_no = any_cast<size_t>(
             options["fiberpool_threads"]);
@@ -39,6 +44,15 @@ auto fiberpool_threads_no = any_cast<size_t>(
 // setup monero's own logger
 mlog_configure(mlog_get_default_log_path(""), true);
 mlog_set_log("1");
+
+if (!filesystem::exists(blockchain_path))
+{
+    cerr << blockchain_path 
+              << "does not exist!\n";
+    return EXIT_FAILURE;
+}
+
+LOG_INFO << "Blockchain path: " << blockchain_path;
 
 // initialize and create instance of MicroCore
 // which is going to provide direct access to monero
@@ -53,6 +67,51 @@ auto current_height = mcore.get_core()
 
 LOG_INFO << "Current blockchain height: " 
          << current_height;
+
+// reads default addresses to be shown by 
+// the frontend for the confing file provided
+if (!filesystem::exists(default_addresses_path))
+{
+    cerr << default_addresses_path 
+         << "does not exist!\n";
+    return EXIT_FAILURE;
+}
+
+if (!filesystem::exists(config_path))
+{
+    cerr << config_path << "does not exist!\n";
+    return EXIT_FAILURE;
+}
+
+LOG_INFO << "Using default addresses from "
+         << filesystem::absolute(default_addresses_path);
+
+xmreg::DefaultAddresses default_addresses {
+           default_addresses_path};
+
+LOG_INFO << "Using default config from "
+         << filesystem::absolute(config_path);
+
+xmreg::DefaultConfig default_config {config_path};
+
+// check if ssl is enabled
+auto ssl = default_config.ssl();
+
+if (ssl.enabled)
+{
+    // check if given server key and crt files exist
+    if (!std::filesystem::exists(ssl.key))
+    {
+        cerr << ssl.key << " ssl-key does not exist!\n";
+        return EXIT_FAILURE;
+    }
+    
+    if (!std::filesystem::exists(ssl.crt))
+    {
+        cerr << ssl.crt << " ssl-crt does not exist!\n";
+        return EXIT_FAILURE;
+    }
+}
 
 if (fiberpool_threads_no == 0)
 {
@@ -72,7 +131,8 @@ FiberPoolSharing<> fiber_pool(fiberpool_threads_no);
 // going to keep passing NON-OWNING raw pointer to it 
 // into services that need to use it. 
 // Basically any raw pointer is NON-OWNING!
-auto task_manager = SearchTaskManager(&mcore, &fiber_pool);
+auto task_manager = SearchTaskManager(
+        &mcore, &fiber_pool, &default_config);
 
 // start search tasks management loop. It mostly just
 // checks periodically for finished tasks and lost
@@ -92,8 +152,9 @@ LOG_INFO << "SearchWebSocketCtrl registered";
 
 // create regular http controller. It will provide
 // initial information, e.g., networy type, to the 
-// frontend.
-auto info_ctrl = make_shared<InfoCtrl>(InfoCtrl(&task_manager));
+// frontend as well as the list of default addresses.
+auto info_ctrl = make_shared<InfoCtrl>(
+        InfoCtrl(&task_manager, &default_addresses));
 app().registerController(info_ctrl);
 
 LOG_INFO << "InfoCtrl registered";
@@ -102,7 +163,19 @@ LOG_INFO << "Listening at 127.0.0.1:" << port;
 
 app().setThreadNum(1);
 app().setIdleConnectionTimeout(1h);
-app().addListener("0.0.0.0", port);
+
+if (ssl.enabled)
+{
+    app().addListener("0.0.0.0", port, true,
+                      ssl.crt, ssl.key);
+    
+    LOG_INFO << "SSL enabled.";
+}
+else
+{
+    app().addListener("0.0.0.0", port);
+    LOG_INFO << "SSL not enabled.";
+}
 
 app().run();
 

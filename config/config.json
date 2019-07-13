@@ -1,0 +1,17 @@
+{
+  "scanning_from" : 
+  [
+      ["One day", 720],
+      ["One week", 5400],
+      ["One month", 21600],
+      ["Six months", 129600]
+  ],
+  "blocks_search_lookahead"            : 100,
+  "ssl" :
+  {
+    "enable" : false,
+    "_comment": "below are example paths to crt and key files need to be given",
+    "ssl-key": "/path/to/server.key",
+    "ssl-crt": "/path/to/server.crt"
+  }
+}

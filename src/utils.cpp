@@ -4,15 +4,6 @@
 #include <boost/program_options.hpp>
 #include "boost/algorithm/string.hpp"
 
-#if defined(__cpp_lib_filesystem)
-#include <filesystem>
-#else 
-#include <experimental/filesystem>
-namespace std 
-{
-    namespace filesystem = experimental::filesystem;
-}
-#endif
 
 namespace xmreg
 {
@@ -33,6 +24,11 @@ auto default_blockchain_path = xmreg::get_default_lmdb_folder(
 
 options["blockchain_path"] = default_blockchain_path;
 
+options["default_addresses_path"] 
+    = "./config/default_addresses.json"s;
+
+options["config_path"] = "./config/config.json"s;
+
 string blockchain_path_msg {
         "Non-default path to lmdb folder " 
         "containing the blockchain. Default is "
@@ -50,7 +46,13 @@ try
                  any_cast<network_type>(options["nettype"]))),
          "network type: 0-MAINNET, 1-TESTNET, 2-STAGENET")
         ("blockchain-path,b", po::value<string>(),
-         blockchain_path_msg.c_str())
+             blockchain_path_msg.c_str())
+        ("da-path,d", po::value<string>()
+             ->default_value("./config/default_addresses.json"),
+            "Non-default path to default_addresses.json file")        
+        ("config-path,c", po::value<string>()
+             ->default_value("./config/config.json"),
+            "Non-default path to config.json file")        
         ("fiberthreads,f",
              po::value<size_t>()->default_value(0),
          "Number of fiberpool thread workers. "
@@ -78,11 +80,8 @@ try
         return options;
     }
 
-
     if (vm.count("nettype"))
     {
-        cout << vm["nettype"].as<size_t>() << endl;
-        
         options["nettype"] 
             = static_cast<network_type>(vm["nettype"].as<size_t>());
 
@@ -91,8 +90,22 @@ try
     }
 
     if (vm.count("blockchain-path"))
+    {
         options["blockchain_path"]
-                = filesystem::path {vm["blockchain-path"].as<string>()};
+                = vm["blockchain-path"].as<string>();
+    }
+
+    if (vm.count("da-path"))
+    {
+        options["default_addresses_path"]
+                = vm["da-path"].as<string>();
+    }
+    
+    if (vm.count("config-path"))
+    {
+        options["config_path"]
+                = vm["config-path"].as<string>();
+    }
     
     options["port"] = vm["port"].as<size_t>();
     options["fiberpool_threads"] = vm["fiberthreads"].as<size_t>();

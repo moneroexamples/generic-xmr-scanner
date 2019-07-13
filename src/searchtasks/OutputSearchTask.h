@@ -2,6 +2,7 @@
 
 #include "ISearchTask.h"
 #include "src/Account.h"
+#include "../config/DefaultConfig.h"
 #include "../JsonBuilder.h"
 
 #include "src/UniversalIdentifier.hpp"
@@ -26,9 +27,7 @@ using namespace std;
 inline void 
 to_json(nl::json& j, Output::info const& info)
 {
-
     string subaddr_idx {"N/A"};
-
 
     if (info.has_subaddress_index())
     {
@@ -42,7 +41,6 @@ to_json(nl::json& j, Output::info const& info)
         {"amount", std::to_string(info.amount)},
         {"index", info.idx_in_tx},
         {"subaddr_idx", subaddr_idx}
-        
     };
 }
 
@@ -51,13 +49,14 @@ class OutputSearchTask:  public ISearchTask
 
 public:
 
-
 OutputSearchTask(unique_ptr<Account> _acc,
                 size_t _no_of_blocks = 720,
-                bool _skip_coinbase = true)
+                bool _skip_coinbase = true,
+                uint64_t _blocks_lookahead = 10)
     : m_acc {std::move(_acc)},
       m_blocks_no {_no_of_blocks},
-      m_skip_coinbase {_skip_coinbase} 
+      m_skip_coinbase {_skip_coinbase},
+      m_blocks_lookahead {_blocks_lookahead}
 {
     assert(m_acc);
     m_address = m_acc->ai2str();
@@ -72,12 +71,9 @@ std::string key() const override
         + std::to_string(m_skip_coinbase);
 }
 
-
 void operator()() override
 {
     auto last_block_height = current_height(); 
-
-    uint64_t blocks_lookahead = 10;
 
     auto searched_blk_no = last_block_height - m_blocks_no;
 
@@ -101,7 +97,7 @@ void operator()() override
         last_block_height = current_height();
 
         uint64_t h1 = searched_blk_no;
-        uint64_t h2 = std::min(h1 + blocks_lookahead - 1, 
+        uint64_t h2 = std::min(h1 + m_blocks_lookahead - 1, 
                                last_block_height);
 
         vector<block> blocks;
@@ -116,6 +112,8 @@ void operator()() override
                       << e.what();
             break;
         }
+
+        //cout << "h1,h2 = " << h1 << ',' << h2 <<  '\n';
         
         //cout << "blocks no: " << blocks.size() << '\n';
 
@@ -146,7 +144,9 @@ void operator()() override
                          {
                            {"current_block", h1},
                            {"blockchain_height", 
-                                last_block_height}
+                                last_block_height},
+                           {"timestamp", 
+                                blocks.front().timestamp}
                          }
                         }});
             
@@ -254,11 +254,12 @@ void operator()() override
 * object
 */
 static unique_ptr<OutputSearchTask> 
-create(nl::json const& in_data)
+create(nl::json const& in_data,
+       DefaultConfig* config)
 {
  string address;
  string viewkey;
- size_t timespan {1};
+ uint64_t no_of_past_blocks {720}; // about 1 day
  bool skip_coinbase {true};
 
  try 
@@ -269,21 +270,26 @@ create(nl::json const& in_data)
       if (in_data.contains("timespan")
             && in_data["timespan"].is_string()) 
       {
-        timespan = std::atoi(in_data["timespan"]
+        no_of_past_blocks = std::atoll(in_data["timespan"]
                            .get<string>().c_str());
       }
 
-      uint64_t no_of_past_blocks {720}; // about 1 day
-
-      switch(timespan)
+      // check if no_of_past_blocks provided by 
+      // the client is allowed
+      
+      if (!ScanningFrom::allowed_no_of_blocks(
+                  config->scannig_from(),
+                  no_of_past_blocks))
       {
-          case 1: {no_of_past_blocks = 720; break;}
-          case 2: {no_of_past_blocks = 7*720; break;}
-          case 3: {no_of_past_blocks = 30*720; break;}
+          LOG_DEBUG << "no_of_past_blocks "
+                    << no_of_past_blocks 
+                    << " not allowed";
+
+          return nullptr;
       }
 
       if (in_data.contains("coinbase") && 
-              in_data["coinbase"].is_boolean())
+             in_data["coinbase"].is_boolean())
       {
           skip_coinbase = in_data["coinbase"];
       }
@@ -303,14 +309,18 @@ create(nl::json const& in_data)
           auto pacc = make_primaryaccount(std::move(acc)); 
 
           task = make_unique<OutputSearchTask>(
-                   std::move(pacc), no_of_past_blocks,
-                   skip_coinbase);
+                   std::move(pacc), 
+                   no_of_past_blocks,
+                   skip_coinbase,
+                   config->blocks_lookahead);
       }
       else
       {
           task = make_unique<OutputSearchTask>(
-                   std::move(acc), no_of_past_blocks,
-                   skip_coinbase);
+                   std::move(acc), 
+                   no_of_past_blocks,
+                   skip_coinbase,
+                   config->blocks_lookahead);
       }
  
       return task;
@@ -338,6 +348,7 @@ protected:
 unique_ptr<Account> m_acc; 
 size_t m_blocks_no {720};
 bool m_skip_coinbase {true};
+uint64_t m_blocks_lookahead {10};
 
 string m_address;
 string m_viewkey;

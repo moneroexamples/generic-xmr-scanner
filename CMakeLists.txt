@@ -34,7 +34,10 @@ add_executable(${PROJECT_NAME}
         main.cpp
         src/utils.cpp
         src/controllers/SearchCtrl.cpp
-        src/controllers/InfoCtrl.cpp) 
+        src/controllers/InfoCtrl.cpp
+        src/config/IConfigReader.cpp
+        src/config/DefaultAddresses.cpp
+        src/config/DefaultConfig.cpp) 
 
 target_include_directories(${PROJECT_NAME}
     PRIVATE 
@@ -47,6 +50,10 @@ target_link_libraries(${PROJECT_NAME}
         Drogon::Drogon  
         Boost::fiber
         stdc++fs)
+
+# copy scanners confing files into build folder
+configure_files(${CMAKE_CURRENT_SOURCE_DIR}/config
+                ${CMAKE_CURRENT_BINARY_DIR}/config)
 
 if (${BUILD_TESTS})
     enable_testing()

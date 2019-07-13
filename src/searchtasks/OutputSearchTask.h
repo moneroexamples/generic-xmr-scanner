@@ -51,10 +51,12 @@ public:
 
 OutputSearchTask(unique_ptr<Account> _acc,
                 size_t _no_of_blocks = 720,
-                bool _skip_coinbase = true)
+                bool _skip_coinbase = true,
+                uint64_t _blocks_lookahead = 10)
     : m_acc {std::move(_acc)},
       m_blocks_no {_no_of_blocks},
-      m_skip_coinbase {_skip_coinbase} 
+      m_skip_coinbase {_skip_coinbase},
+      m_blocks_lookahead {_blocks_lookahead}
 {
     assert(m_acc);
     m_address = m_acc->ai2str();
@@ -72,8 +74,6 @@ std::string key() const override
 void operator()() override
 {
     auto last_block_height = current_height(); 
-
-    uint64_t blocks_lookahead = 10;
 
     auto searched_blk_no = last_block_height - m_blocks_no;
 
@@ -97,7 +97,7 @@ void operator()() override
         last_block_height = current_height();
 
         uint64_t h1 = searched_blk_no;
-        uint64_t h2 = std::min(h1 + blocks_lookahead - 1, 
+        uint64_t h2 = std::min(h1 + m_blocks_lookahead - 1, 
                                last_block_height);
 
         vector<block> blocks;
@@ -307,14 +307,18 @@ create(nl::json const& in_data,
           auto pacc = make_primaryaccount(std::move(acc)); 
 
           task = make_unique<OutputSearchTask>(
-                   std::move(pacc), no_of_past_blocks,
-                   skip_coinbase);
+                   std::move(pacc), 
+                   no_of_past_blocks,
+                   skip_coinbase,
+                   config->blocks_lookahead);
       }
       else
       {
           task = make_unique<OutputSearchTask>(
-                   std::move(acc), no_of_past_blocks,
-                   skip_coinbase);
+                   std::move(acc), 
+                   no_of_past_blocks,
+                   skip_coinbase,
+                   config->blocks_lookahead);
       }
  
       return task;
@@ -342,6 +346,7 @@ protected:
 unique_ptr<Account> m_acc; 
 size_t m_blocks_no {720};
 bool m_skip_coinbase {true};
+uint64_t m_blocks_lookahead {10};
 
 string m_address;
 string m_viewkey;

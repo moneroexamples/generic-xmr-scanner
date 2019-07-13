@@ -16,6 +16,11 @@ DefaultConfig::DefaultConfig(string _filepath)
         throw std::runtime_error(
                 "Cant read: " + _filepath );
     }
+
+    if (config_data.contains("blocks_search_lookahead"))
+    {
+        blocks_lookahead = config_data["blocks_search_lookahead"];
+    }
 }
 
 vector<ScanningFrom>

@@ -49,6 +49,8 @@ from_json(nl::json const& j, vector<ScanningFrom>& sfs)
 class DefaultConfig: public IConfigReader
 {
 public:
+    uint64_t blocks_lookahead {10};
+
     DefaultConfig(string _filepath); 
     vector<ScanningFrom> scannig_from();
 };

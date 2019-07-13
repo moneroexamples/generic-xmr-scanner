@@ -1,19 +1,10 @@
 {
-  "blockchain-path" :
-  {
-    "_comment" : "if paths are empty, default Monero paths will be used",
-    "_example"  : "/home/mwo2/.bitmonero/lmdb/",
-    "mainnet"  : "",
-    "testnet"  : "",
-    "stagenet" : ""
-  },
   "scanning_from" : 
   [
       ["One day", 720],
       ["One week", 5400],
       ["One month", 21600]
   ],
-  "refresh_block_status_every_seconds" : 10,
   "blocks_search_lookahead"            : 10,
   "ssl" :
   {

@@ -23,8 +23,8 @@ The idea is based on two projects:
  - [onion-monero-viewer](https://github.com/moneroexamples/onion-monero-viewer)
  - [transactions-export](https://github.com/moneroexamples/transactions-export)
 
-The first project allowed for online identification of outputs      
-associated with given address and viewkey. The second project additionally
+The first project allowed for online identification of outputs associated with 
+given address and viewkey. The second project additionally
 searched for transactions which use the outputs as decoys/ring members. 
 However, the first project got discontinued, while the second is a
 command-line program which limits its widespread use. 
@@ -72,7 +72,6 @@ will not be able to locate the compiled monero.
 #### Project download and compilation
 
 ```bash
-
 # go to home folder 
 cd ~
 
@@ -104,14 +103,20 @@ The project comes with basic html fronted located in `html` folder. Read more he
 
 ```bash
 xmrscanner: generic monero scanner:
-  -h [ --help ]                  Help
-  -n [ --nettype ] arg (=2)      network type: 0-MAINNET, 1-TESTNET, 2-STAGENET
-  -b [ --blockchain-path ] arg   Non-default path to lmdb folder containing the
-                                 blockchain. Default is ~/.bitmonero/s
-                                 tagenet/lmdb
-  -f [ --fiberthreads ] arg (=0) Number of fiberpool thread workers. Default 
-                                 is 0 - based on hardware
-  -p [ --port ] arg (=8848)      Service port
+  -h [ --help ]                         Help
+  -n [ --nettype ] arg (=2)             network type: 0-MAINNET, 1-TESTNET, 
+                                        2-STAGENET
+  -b [ --blockchain-path ] arg          Non-default path to lmdb folder 
+                                        containing the blockchain. Default is 
+                                        /home/mwo2/.bitmonero/stagenet/lmdb
+  -d [ --da-path ] arg (=./config/default_addresses.json)
+                                        Non-default path to default_addresses.j
+                                        son file
+  -c [ --config-path ] arg (=./config/config.json)
+                                        Non-default path to config.json file
+  -f [ --fiberthreads ] arg (=0)        Number of fiberpool thread workers. 
+                                        Default is 0 - based on hardware
+  -p [ --port ] arg (=8848)             Service port
 ```
 
 

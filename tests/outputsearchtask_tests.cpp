@@ -119,11 +119,11 @@ TEST_F(ACCOUNT_FIXTURE, CreateFactoryUsingJson)
     {
         auto in_data2 = in_data;
 
-        in_data2["timespan"] = "2";
+        in_data2["timespan"] = "720";
 
         auto task = OutputSearchTask::create(in_data2);
 
-        EXPECT_EQ(task->blocks_no(), 7*720);
+        EXPECT_EQ(task->blocks_no(), 720);
     }
 
     {

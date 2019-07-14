@@ -255,7 +255,7 @@ void operator()() override
 */
 static unique_ptr<OutputSearchTask> 
 create(nl::json const& in_data,
-       DefaultConfig* config)
+       DefaultConfig* config = nullptr)
 {
  string address;
  string viewkey;
@@ -277,7 +277,8 @@ create(nl::json const& in_data,
       // check if no_of_past_blocks provided by 
       // the client is allowed
       
-      if (!ScanningFrom::allowed_no_of_blocks(
+      if (config && 
+              !ScanningFrom::allowed_no_of_blocks(
                   config->scannig_from(),
                   no_of_past_blocks))
       {
@@ -302,6 +303,9 @@ create(nl::json const& in_data,
           return nullptr;
       }
 
+      uint64_t blocks_lookahead 
+          = config ? config->blocks_lookahead : 10;
+
       unique_ptr<OutputSearchTask> task;
 
       if (acc->type() == Account::PRIMARY)
@@ -312,7 +316,7 @@ create(nl::json const& in_data,
                    std::move(pacc), 
                    no_of_past_blocks,
                    skip_coinbase,
-                   config->blocks_lookahead);
+                   blocks_lookahead);
       }
       else
       {
@@ -320,7 +324,7 @@ create(nl::json const& in_data,
                    std::move(acc), 
                    no_of_past_blocks,
                    skip_coinbase,
-                   config->blocks_lookahead);
+                   blocks_lookahead);
       }
  
       return task;

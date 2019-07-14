@@ -2,14 +2,17 @@ macro(add_om_test _TEST_NAME)
 
     add_executable(${_TEST_NAME}_tests
             ${_TEST_NAME}_tests.cpp
-            ../ext/xmregcore/tests/JsonTx.cpp)
+            ../ext/xmregcore/tests/JsonTx.cpp
+            ../src/config/IConfigReader.cpp
+            ../src/config/DefaultConfig.cpp)
 
     target_link_libraries(${_TEST_NAME}_tests
             gtest gtest_main
             gmock gmock_main
             XMREG::core
             Drogon::Drogon
-            Boost::fiber)
+            Boost::fiber
+            stdc++fs)
 
     target_include_directories(${_TEST_NAME}_tests
         PRIVATE 

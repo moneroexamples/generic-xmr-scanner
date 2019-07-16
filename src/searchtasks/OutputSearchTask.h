@@ -237,16 +237,9 @@ void operator()() override
         searched_blk_no = h2 + 1;
     }
 
+    results.push_back(jb().success({{"finished", true}}));
 
-    {
-        std::ostringstream buffer;
-        buffer<< key().substr(0, 6) << " finished\n";
-        std::cout << buffer.str() << std::flush;
-        
-        nl::json msg {{"found: ", buffer.str()}};
-        results.push_back(std::move(msg));
-        notify(this);
-    }
+    notify(this);
 }
 
 /*

@@ -227,8 +227,6 @@ function setup_known_addresses(jstatus)
             opt.selected = true;
         
         timespan.childNodes[1].appendChild(opt);
-
-        console.log(scanning_opt);
     }
 
 }
@@ -240,6 +238,11 @@ function setup_submit_btn()
     submit_button.addEventListener("click",
     function(evt) 
     {
+       
+        var status_info = document.getElementById("status-info");
+
+        status_info.innerHTML = "n/a";
+
         if ( window.restbed.ws !== null 
                 && window.restbed.ws.readyState === window.restbed.ws.OPEN) 
         {
@@ -335,10 +338,25 @@ function open()
                                    data["progress"]["timestamp"]*1000)
                                     , '%Y-%M-%d %H:%m:%s');
 
-
-                status_info.innerHTML = current_block 
+                if (current_block < blockchain_height)
+                {
+                    status_info.innerHTML = current_block 
                                 + "/" + blockchain_height
                                 + " (scanning blocks from " + timestamp + ")";
+                }
+                else
+                {
+                    status_info.innerHTML = "done";
+                }
+
+                return;
+           }
+
+
+           if ("finished" in data)
+           {
+                // console.log(data); 
+                status_info.innerHTML = "done";
                 return;
            }
 

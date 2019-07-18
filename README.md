@@ -14,7 +14,7 @@ The project aims to develop generic online scanner/searcher for Monero. Its poss
 
 The current development version of the scanner on the stagenet network is available at:
 
- - [http://139.162.60.17:9100/](http://139.162.60.17:9100/)
+ - [https://li1473-17.members.linode.com:4443/](https://li1473-17.members.linode.com:4443/)
 
 ## Motivation
 

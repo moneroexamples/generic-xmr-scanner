@@ -434,8 +434,12 @@ function open()
 {
     //window.xmrscanner_base_url = "139.162.60.17";
     window.xmrscanner_base_url = "127.0.0.1";
+
+    // for ssl neet to change http into https
+    // and ws into wss below
     window.xmrscanner_url_http = "http://" + window.xmrscanner_base_url + ":8848";
     window.xmrscanner_url_ws = "ws://" + window.xmrscanner_base_url + ":8848";
+
     window.restbed = { ws: null };
     setup_network();
     setup_submit_btn();

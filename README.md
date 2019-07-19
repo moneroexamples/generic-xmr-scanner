@@ -1,4 +1,4 @@
-## Generic Monero Scanner
+# Generic Monero Scanner
 
 The project aims to develop generic online scanner/searcher for Monero. Its possible capability includes searching for:
 
@@ -30,21 +30,21 @@ However, the first project got discontinued, while the second is a
 command-line program which limits its widespread use. 
 
 The generic Monero scanner is solution to these issues.
- 
+
 ## Technologies
 
 The key technologies used in the scanner are:
 
- - [C++17](https://en.wikipedia.org/wiki/C%2B%2B17) - recent version of the C++ programming language.
- - [websockets](https://en.wikipedia.org/wiki/WebSocket) -  protocol for duplex communication between frontend and backend (support provided by [drogon](https://github.com/an-tao/drogon))
- - [FiberPool](https://github.com/moneroexamples/fiberpool) - single-file header-only C++17 [boost::fiber](https://github.com/boostorg/fiber) thread pool library 
- - [xmregcore](https://github.com/moneroexamples/xmregcore) - core utilities used in moneroexample projects.
+- [C++17](https://en.wikipedia.org/wiki/C%2B%2B17) - recent version of the C++ programming language.
+- [websockets](https://en.wikipedia.org/wiki/WebSocket) -  protocol for duplex communication between frontend and backend (support provided by [drogon](https://github.com/an-tao/drogon))
+- [FiberPool](https://github.com/moneroexamples/fiberpool) - single-file header-only C++17 [boost::fiber](https://github.com/boostorg/fiber) thread pool library
+- [xmregcore](https://github.com/moneroexamples/xmregcore) - core utilities used in moneroexample projects.
 
 ## Example compilation on Ubuntu 18.04
 
 [![CircleCI](https://circleci.com/gh/moneroexamples/generic-xmr-scanner.svg?style=svg)](https://circleci.com/gh/moneroexamples/generic-xmr-scanner)
 
-#### Monero download and compilation
+### Monero download and compilation
 
 To compile the project, most recent Monero development version (i.e., its `master` branch)
 needs to be compiled first. 
@@ -66,13 +66,14 @@ cd monero/
 # compile
 USE_SINGLE_BUILDDIR=1 make
 ```
+
 Using `USE_SINGLE_BUILDDIR` flag is important. Without the flag, cmake of the project
 will not be able to locate the compiled monero.
 
-#### Project download and compilation
+### Project download and compilation
 
 ```bash
-# go to home folder 
+# go to home folder
 cd ~
 
 # drogon dependencies
@@ -92,10 +93,11 @@ cmake ..
 make
 ```
 
-Following the compilation, `xmrscanner` executable should be available in the `build` folder. 
+Following the compilation, `xmrscanner` executable should be available in the `build` folder.
 
-#### Html fronted 
-The project comes with basic html fronted located in `html` folder. Read more here: 
+#### Html fronted
+
+The project comes with basic html fronted located in `html` folder. Basic instruction for running `xmrscanner` over `http` or `https` (SSL) protocoles are given here:
 
 - https://github.com/moneroexamples/generic-xmr-scanner/tree/master/html#basic-html-client-for-the-scanner
 
@@ -119,7 +121,6 @@ xmrscanner: generic monero scanner:
   -p [ --port ] arg (=8848)             Service port
 ```
 
-
-## How can you help?
+## How can you help
 
 Constructive criticism, code and website edits are always good. They can be made through github.

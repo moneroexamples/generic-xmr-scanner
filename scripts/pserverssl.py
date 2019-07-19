@@ -6,7 +6,7 @@
 # Usage: Just run it in the root folder of a website
 #
 # Example:
-# python ~/pserverssl.py -c /path/to/cert1.pem -k /path/to/privkey1.pem -a "0.0.0.0"
+# python ~/pserverssl.py -k /path/to/privkey1.pem -c /path/to/cert1.pem -a "0.0.0.0"
 #
 # To test use curl, e.g.
 # curl -k https://yourdomainname:4443

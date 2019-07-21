@@ -86,7 +86,7 @@ SearchWebSocketCtrl::handleNewMessage(
 
          //cout << jmessage->dump() << endl;
              
-         auto search_task = OutputSearchTask::create(
+         auto search_task = make_task<OutputSearchTask>(
                  *jmessage,
                  m_task_manager->config());
 

@@ -37,7 +37,10 @@ add_executable(${PROJECT_NAME}
         src/controllers/InfoCtrl.cpp
         src/config/IConfigReader.cpp
         src/config/DefaultAddresses.cpp
-        src/config/DefaultConfig.cpp) 
+        src/config/DefaultConfig.cpp
+        src/searchtasks/SearchTask.cpp
+        src/searchtasks/OutputSearchTask.cpp
+        src/searchtasks/InputSearchTask.cpp)
 
 target_include_directories(${PROJECT_NAME}
     PRIVATE 

@@ -11,7 +11,8 @@ to_json(nl::json& j, Input::info const& info)
 
     j = nl::json {
         {"key_image", pod_to_hex(info.key_img)},
-        {"out_pub_key", pod_to_hex(info.out_pub_key)}
+        {"public_key", pod_to_hex(info.out_pub_key)},
+        {"amount", info.amount}
     };
 }
 
@@ -31,7 +32,7 @@ InputSearchTask::process_tx(
         block const& blk, uint64_t blk_no)
 {
     auto identifier = make_identifier(tx,
-                        make_unique<RealInput>(
+                        make_unique<GuessInput>(
                             m_acc.get(),
                             const_cast<MicroCore*>(m_core)));
     identifier.identify();
@@ -51,6 +52,8 @@ InputSearchTask::process_tx(
                       {"tx", tx_hash},
                       {"inputs", inputs_found}
                     });
+
+        cout << msg.dump() << endl;
 
         results.push_back(std::move(msg));
 

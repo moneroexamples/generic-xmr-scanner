@@ -52,10 +52,12 @@
 		</select>
         </p>
         <p>
-        <label for="skip-coinbase"></label>
-        <input id="skip-coinbase" name="checkbox" type="checkbox" checked="checked">Skip coinbase transactions (faster scanning)
-        <button class="pull-right" id="submit-btn" type="button">Search</button>
-		</p>
+            <label for="skip-coinbase"></label>
+            <input id="skip-coinbase" name="checkbox" type="checkbox" checked="checked">Skip coinbase transactions (faster scanning)
+            <label for="ring-members"></label>
+            <input id="ring-members" name="checkbox" type="checkbox">Ring members detection
+            <button class="pull-right" id="submit-btn" type="button">Search</button>
+        </p>
        </fieldset>
      </form>
 
@@ -279,12 +281,14 @@ function open()
         var viewkey = document.getElementById("viewkey").value;
         var timespan = document.getElementById("timespan").value;
         var skip_coinbase = document.getElementById("skip-coinbase").checked;
+        var ring_members = document.getElementById("ring-members").checked;
 
         var message = {"scanner": "outputs",
                        "address": address, 
                        "viewkey": viewkey,
                        "timespan": timespan,
-                       "coinbase": skip_coinbase};
+                       "coinbase": skip_coinbase,
+                       "ringmembers": ring_members};
 
         add_message("submitting address and viewkey to the server");
 
@@ -360,9 +364,10 @@ function open()
                 return;
            }
 
+           var outputs_table = document.getElementById("outputs-table-body");
+
            if ("outputs" in data)
            {
-               var outputs_table = document.getElementById("outputs-table-body");
 
                var blk_number    = data["block"];
                //var blk_timestamp = new Date(data["timestamp"]*1000).toUTCString();
@@ -407,6 +412,54 @@ function open()
 
                return;
            }
+
+            if ("inputs" in data)
+            {
+                var blk_number    = data["block"];
+                //var blk_timestamp = new Date(data["timestamp"]*1000).toUTCString();
+                var blk_timestamp = formatDate(new Date(data["timestamp"]*1000), '%Y-%M-%d %H:%m:%s');
+
+                var tx            = data["tx"];
+
+                for (var i = 0; i < data["inputs"].length; i++)
+                {
+                    var input = data["inputs"][i];
+
+                    var amount = BigNumber(input["amount"]);
+
+                    var to_show = input.public_key
+                         + ", " + amount.toString();
+                    //add_message(to_show);
+
+                    //var subaddress_index = output.subaddr_idx;
+
+                    //var new_row = outputs_table.insertRow(-1);
+                    var new_row = outputs_table.insertRow(0);
+
+                    var blk = new_row.insertCell(0);
+                    var timestamp = new_row.insertCell(1);
+                    //var public_key= new_row.insertCell(2);
+                    var tx_hash = new_row.insertCell(2);
+                    var amountt = new_row.insertCell(3);
+                    var subaddr_idx = new_row.insertCell(4);
+
+                    var tx_link = document.createElement('a');
+                    tx_link.appendChild(document.createTextNode(tx));
+                    tx_link.title = tx;
+                    tx_link.target = '_black';
+                    tx_link.href = window.xmrexplorer + tx;
+
+                    blk.innerHTML        = blk_number;
+                    timestamp.innerHTML  = blk_timestamp;
+                    //public_key.innerHTML = output.public_key;
+                    tx_hash.appendChild(tx_link);
+                    //subaddr_idx.innerHTML = subaddress_index;
+                    amountt.innerHTML = amount.dividedBy(1e12).toString();
+                }
+
+                return;
+            }
+
         });
 
        // console.log(results);

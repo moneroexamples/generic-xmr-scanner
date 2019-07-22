@@ -145,11 +145,12 @@ SearchTask::operator()()
                            << " switched thread to " 
                            << my_thread << '\n';
 
-                    //std::cout << buffer.str() << std::flush;
-                    
-                    this->process_tx(tx, blk, h1 + i);
+                    //std::cout << buffer.str() << std::flush;                                      
                  }
-            }
+
+                 this->process_tx(tx, blk, h1 + i);
+
+            } // for (auto const& tx: txs)
 
         } //for (uint64_t i {0}; i < blocks.size(); ++i)
 

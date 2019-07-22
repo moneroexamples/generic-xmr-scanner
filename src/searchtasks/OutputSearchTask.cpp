@@ -75,6 +75,8 @@ OutputSearchTask::process_tx(
                       {"outputs", outputs_found}
                     });
 
+        cout << msg.dump() << '\n';
+
         results.push_back(std::move(msg));
 
         notify(this);

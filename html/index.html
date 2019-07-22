@@ -65,8 +65,11 @@
       <ul id="messages"></ul>
   </div>
 
-  <table id="outputs-table">
-    <caption>Output scanning results. Progress: <span id="status-info">n/a</span></caption>
+  <p id="progress" style="display:none">
+    Scanning progress: <span id="status-info">n/a</span>
+  </p>
+
+  <table id="outputs-table" style="display:none">
     <thead>
       <tr>
         <th>Block Height</th>
@@ -79,6 +82,19 @@
     <tbody id="outputs-table-body">
     </tbody>
   </table>
+
+    <table id="ringmembers-table" style="display:none">
+      <thead>
+        <tr>
+          <th>Block Height</th>
+          <th>Timestamp</th>
+          <th>Output public key</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody id="ringmembers-table-body">
+      </tbody>
+    </table>
 
  </div>
 
@@ -253,6 +269,7 @@ function setup_submit_btn()
 
         open();
     });
+
 }
 
 function remove_children(elem_name)
@@ -272,8 +289,9 @@ function open()
 
     ws.onopen = function()
     {
-		remove_children('messages');
-		remove_children('outputs-table-body');
+        remove_children('messages');
+        remove_children('outputs-table-body');
+        remove_children('ringmembers-table-body');
 
         add_message("Established connection.");
 
@@ -299,6 +317,7 @@ function open()
     {
        var results = "";
 
+
         try 
         {
             results = JSON.parse(evt.data); 
@@ -319,6 +338,10 @@ function open()
             }
        }
 
+       var progress = document.getElementById("progress");
+
+       progress.style.display = "block"
+
        var status_info = document.getElementById("status-info");
 
         results["msgs"].forEach(function(msg)
@@ -335,8 +358,10 @@ function open()
            if ("progress" in data)
            {
                 var current_block = data["progress"]["current_block"];
+
                 var blockchain_height 
                    = data["progress"]["blockchain_height"];
+
                 var timestamp = formatDate(
                                    new Date(
                                    data["progress"]["timestamp"]*1000)
@@ -364,10 +389,31 @@ function open()
                 return;
            }
 
-           var outputs_table = document.getElementById("outputs-table-body");
+
+           var outputs_table
+                 = document.getElementById("outputs-table");
+
+           var outputs_table_body
+                = document.getElementById("outputs-table-body");
+
+
+           var ringmembers_table
+                  = document.getElementById("ringmembers-table");
+
+           var ringmembers_table_body
+                 = document.getElementById("ringmembers-table-body");
 
            if ("outputs" in data)
            {
+               if (ringmembers_table.style.display == "block")
+               {
+                    ringmembers_table.style.display = "none";
+               }
+
+               if (outputs_table.style.display == "none")
+               {
+                    outputs_table.style.display = "block";
+               }
 
                var blk_number    = data["block"];
                //var blk_timestamp = new Date(data["timestamp"]*1000).toUTCString();
@@ -387,7 +433,7 @@ function open()
                    var subaddress_index = output.subaddr_idx;
 
                    //var new_row = outputs_table.insertRow(-1);
-                   var new_row = outputs_table.insertRow(0);
+                   var new_row = outputs_table_body.insertRow(0);
 
                    var blk = new_row.insertCell(0);
                    var timestamp = new_row.insertCell(1);
@@ -415,6 +461,18 @@ function open()
 
             if ("inputs" in data)
             {
+
+                if (outputs_table.style.display == "block")
+                {
+                     outputs_table.style.display = "none";
+                }
+
+                if (ringmembers_table.style.display == "none")
+                {
+                     ringmembers_table.style.display = "block";
+                }
+
+
                 var blk_number    = data["block"];
                 //var blk_timestamp = new Date(data["timestamp"]*1000).toUTCString();
                 var blk_timestamp = formatDate(new Date(data["timestamp"]*1000), '%Y-%M-%d %H:%m:%s');
@@ -425,6 +483,8 @@ function open()
                 {
                     var input = data["inputs"][i];
 
+                    //console.log(input);
+
                     var amount = BigNumber(input["amount"]);
 
                     var to_show = input.public_key
@@ -434,18 +494,17 @@ function open()
                     //var subaddress_index = output.subaddr_idx;
 
                     //var new_row = outputs_table.insertRow(-1);
-                    var new_row = outputs_table.insertRow(0);
+                    var new_row = ringmembers_table_body.insertRow(0);
 
                     var blk = new_row.insertCell(0);
                     var timestamp = new_row.insertCell(1);
                     //var public_key= new_row.insertCell(2);
                     var tx_hash = new_row.insertCell(2);
                     var amountt = new_row.insertCell(3);
-                    var subaddr_idx = new_row.insertCell(4);
 
                     var tx_link = document.createElement('a');
-                    tx_link.appendChild(document.createTextNode(tx));
-                    tx_link.title = tx;
+                    tx_link.appendChild(document.createTextNode(input.public_key));
+                    tx_link.title = input.public_key;
                     tx_link.target = '_black';
                     tx_link.href = window.xmrexplorer + tx;
 
@@ -453,7 +512,6 @@ function open()
                     timestamp.innerHTML  = blk_timestamp;
                     //public_key.innerHTML = output.public_key;
                     tx_hash.appendChild(tx_link);
-                    //subaddr_idx.innerHTML = subaddress_index;
                     amountt.innerHTML = amount.dividedBy(1e12).toString();
                 }
 

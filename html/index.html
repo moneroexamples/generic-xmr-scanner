@@ -65,11 +65,11 @@
       <ul id="messages"></ul>
   </div>
 
-  <p id="progress" style="display:none">
+  <p id="progress" style="display:none" class="row">
     Scanning progress: <span id="status-info">n/a</span>
   </p>
 
-  <table id="outputs-table" style="display:none">
+  <table id="outputs-table" style="display:none" class="row">
     <thead>
       <tr>
         <th>Block Height</th>
@@ -83,13 +83,13 @@
     </tbody>
   </table>
 
-    <table id="ringmembers-table" style="display:none">
+   <table id="ringmembers-table" style="display:none" class="row">
       <thead>
         <tr>
           <th>Block Height</th>
           <th>Timestamp</th>
           <th>Output public key</th>
-          <th>Amount</th>
+          <th>Count</th>
         </tr>
       </thead>
       <tbody id="ringmembers-table-body">
@@ -293,6 +293,9 @@ function open()
         remove_children('outputs-table-body');
         remove_children('ringmembers-table-body');
 
+        document.getElementById("ringmembers-table").style.display="none";
+        document.getElementById("outputs-table").style.display="none";
+
         add_message("Established connection.");
 
         var address = document.getElementById("address").value;
@@ -312,6 +315,8 @@ function open()
 
         ws.send(JSON.stringify(message));
     };
+     
+    var my_ringmembers = new Map(); 
 
     ws.onmessage = function(evt)
     {
@@ -491,29 +496,66 @@ function open()
                          + ", " + amount.toString();
                     //add_message(to_show);
 
-                    //var subaddress_index = output.subaddr_idx;
+                    //var new_row /var subaddress_index = output.subaddr_idx;
+                    var new_row = null;
 
-                    //var new_row = outputs_table.insertRow(-1);
-                    var new_row = ringmembers_table_body.insertRow(0);
+                    if (!my_ringmembers.has(input.public_key))
+                    {
+                        new_row = ringmembers_table_body.insertRow(0);
+                        var blk = new_row.insertCell(0);
+                        var timestamp = new_row.insertCell(1);
+                        var tx_hash = new_row.insertCell(2);
+                        var count = new_row.insertCell(3);
+                    
+                        blk.innerHTML        = blk_number;
+                        timestamp.innerHTML  = blk_timestamp;
 
-                    var blk = new_row.insertCell(0);
-                    var timestamp = new_row.insertCell(1);
-                    //var public_key= new_row.insertCell(2);
-                    var tx_hash = new_row.insertCell(2);
-                    var amountt = new_row.insertCell(3);
+                        var tx_link = document.createElement('a');
+                        tx_link.appendChild(document.createTextNode(input.public_key));
+                        tx_link.title = input.public_key;
+                        tx_link.target = '_black';
+                        tx_link.href = window.xmrexplorer + tx;
+                    
+                        tx_hash.appendChild(tx_link);
+                    
+                        count.innerHTML = '1';
 
-                    var tx_link = document.createElement('a');
-                    tx_link.appendChild(document.createTextNode(input.public_key));
-                    tx_link.title = input.public_key;
-                    tx_link.target = '_black';
-                    tx_link.href = window.xmrexplorer + tx;
+                        my_ringmembers.set(input.public_key, 
+                                   {row: new_row, 
+                                   count: count,
+                                   block: blk,
+                                   timestamp: timestamp,
+                                   txs: [tx]});
+                    }
+                    else
+                    {
+                        var output_info = my_ringmembers.get(input.public_key)
+                        //my_ringmembers.get(input.public_key).push(tx);
 
-                    blk.innerHTML        = blk_number;
-                    timestamp.innerHTML  = blk_timestamp;
+                        output_info['txs'].push(tx);
+                        count = output_info['count'];
+                        count.innerHTML = output_info['txs'].length.toString();
+
+                        output_info['block'].innerHTML        = blk_number;
+                        output_info['timestamp'].innerHTML  = blk_timestamp;
+                    }
+                    
+                    //blk.innerHTML        = blk_number;
+                    //timestamp.innerHTML  = blk_timestamp;
                     //public_key.innerHTML = output.public_key;
-                    tx_hash.appendChild(tx_link);
-                    amountt.innerHTML = amount.dividedBy(1e12).toString();
+                    //amountt.innerHTML = amount.dividedBy(1e12).toString();
                 }
+
+                //console.log('ring_memebrs found are:', my_ringmembers);
+
+                //for (var [pub_key, txs] of my_ringmembers)
+                //{
+                  //  console.log(pub_key, txs['txs'].length);
+               // }
+
+
+                // once my_ringmembers got updated with new inputs
+                // lets sort it
 
                 return;
             }

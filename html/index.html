@@ -501,7 +501,7 @@ function open()
 
                     if (!my_ringmembers.has(input.public_key))
                     {
-                        new_row = ringmembers_table_body.insertRow(0);
+                        new_row = ringmembers_table_body.insertRow(-1);
                         var blk = new_row.insertCell(0);
                         var timestamp = new_row.insertCell(1);
                         var tx_hash = new_row.insertCell(2);

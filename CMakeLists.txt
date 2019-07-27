@@ -40,7 +40,8 @@ add_executable(${PROJECT_NAME}
         src/config/DefaultConfig.cpp
         src/searchtasks/SearchTask.cpp
         src/searchtasks/OutputSearchTask.cpp
-        src/searchtasks/InputSearchTask.cpp)
+        src/searchtasks/InputSearchTask.cpp
+        src/searchtasks/InputSearchLiteTask.cpp)
 
 target_include_directories(${PROJECT_NAME}
     PRIVATE 

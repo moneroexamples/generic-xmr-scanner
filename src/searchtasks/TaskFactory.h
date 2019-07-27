@@ -2,6 +2,7 @@
 #define TASKFACTORY_H
 
 #include "InputSearchTask.h"
+#include "InputSearchLiteTask.h"
 
 #include "../config/DefaultConfig.h"
 

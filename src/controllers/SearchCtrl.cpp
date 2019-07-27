@@ -93,7 +93,11 @@ SearchWebSocketCtrl::handleNewMessage(
          {
              cout << "Create InputSearchTask task\n";
 
-             search_task = make_task<InputSearchTask>(
+             //search_task = make_task<InputSearchTask>(
+                     //*jmessage,
+                     //m_task_manager->config());
+             
+             search_task = make_task<InputSearchLiteTask>(
                      *jmessage,
                      m_task_manager->config());
          }

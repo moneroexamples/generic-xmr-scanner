@@ -37,11 +37,12 @@ SearchTask::operator()()
         std::cout << buffer.str() << std::flush;
     }
 
-    auto time1 = chrono::system_clock::now();
+    // set initial time1 into past so that first
+    // notification to the client is sent immedietly
+    auto time1 = chrono::system_clock::now() - 10s;
 
     while(!m_should_finish)
     {
-
         last_block_height = current_height();
 
         uint64_t h1 = searched_blk_no;
@@ -75,13 +76,13 @@ SearchTask::operator()()
             // update search progress status
             // every number of seconds
             
-            ostringstream os;
+            //ostringstream os;
 
-            os  << key().substr(0, 6) << " " 
-                  << blocks.size() << " blocks from "
-                  << h1 << " to " << h2
-                  << " out of " << last_block_height 
-                  << " blocks\n";
+            //os  << key().substr(0, 6) << " " 
+                  //<< blocks.size() << " blocks from "
+                  //<< h1 << " to " << h2
+                  //<< " out of " << last_block_height 
+                  //<< " blocks\n";
 
             //cout << os.str();
 

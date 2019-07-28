@@ -45,15 +45,12 @@
 	   <label for="timespan">Start scannig from</label>
 		<select id="timespan">
 		  <optgroup label="Since when?">
-			<!--<option selected="selected" value="1">One day ago</option>
-			<option value="2">One week ago</option>
-            <option value="3">One month ago</option>-->
 		  </optgroup>
 		</select>
         </p>
         <p>
             <label for="skip-coinbase"></label>
-            <input id="skip-coinbase" name="checkbox" type="checkbox" checked="checked">Skip coinbase transactions (faster scanning)
+            <input id="skip-coinbase" name="checkbox" type="checkbox" checked="checked">Skip coinbase transactions 
             <label for="ring-members"></label>
             <input id="ring-members" name="checkbox" type="checkbox">Ring members detection
             <button class="pull-right" id="submit-btn" type="button">Search</button>
@@ -63,13 +60,16 @@
 
     <div class="row">
       <ul id="messages"></ul>
-  </div>
+    </div>
 
-  <p id="progress" style="display:none" class="row">
-    Scanning progress: <span id="status-info">n/a</span>
-  </p>
+    <div class="row is-center">
+     <p id="progress" style="display:none">
+       Scanning progress: <span id="status-info">n/a</span>
+     </p>
+    </div>
 
-  <table id="outputs-table" style="display:none" class="row">
+    <div class="row">  
+  <table id="outputs-table" class="is-hidden">
     <thead>
       <tr>
         <th>Block Height</th>
@@ -83,7 +83,7 @@
     </tbody>
   </table>
 
-   <table id="ringmembers-table" style="display:none" class="row">
+   <table id="ringmembers-table" class="is-hidden">
       <thead>
         <tr>
           <th>Block Height</th>
@@ -95,6 +95,7 @@
       <tbody id="ringmembers-table-body">
       </tbody>
     </table>
+    </div>
 
  </div>
 
@@ -293,8 +294,8 @@ function open()
         remove_children('outputs-table-body');
         remove_children('ringmembers-table-body');
 
-        document.getElementById("ringmembers-table").style.display="none";
-        document.getElementById("outputs-table").style.display="none";
+        //document.getElementById("ringmembers-table").style.display="none";
+        //document.getElementById("outputs-table").style.display="none";
 
         add_message("Established connection.");
 
@@ -317,6 +318,8 @@ function open()
     };
      
     var my_ringmembers = new Map(); 
+
+    var first_block_height = null;
 
     ws.onmessage = function(evt)
     {
@@ -349,6 +352,11 @@ function open()
 
        var status_info = document.getElementById("status-info");
 
+        // sometimes last msgs can come out of order
+        // so we mark here if finish was seen just in case
+        // we get some out-of-order msg.
+        var finished_seen = false;
+
         results["msgs"].forEach(function(msg)
         {
 
@@ -360,9 +368,12 @@ function open()
 
            var data = msg["data"];
 
-           if ("progress" in data)
+           if ("progress" in data && finished_seen == false)
            {
                 var current_block = data["progress"]["current_block"];
+
+                if (!first_block_height)
+                    first_block_height = current_block; 
 
                 var blockchain_height 
                    = data["progress"]["blockchain_height"];
@@ -372,11 +383,18 @@ function open()
                                    data["progress"]["timestamp"]*1000)
                                     , '%Y-%M-%d %H:%m:%s');
 
+                var percent_complete = (current_block - first_block_height)
+                                    / (blockchain_height - first_block_height) * 100;
+
                 if (current_block < blockchain_height)
                 {
-                    status_info.innerHTML = current_block 
-                                + "/" + blockchain_height
-                                + " (scanning blocks from " + timestamp + ")";
+                    status_info.innerHTML = 
+                        "<span class=\"text-primary\"><strong>" 
+                            + percent_complete.toFixed(2) + "%" 
+                        + "</strong></span> "
+                        + "<span class=\"text-grey\">(" 
+                        + current_block + "/" + blockchain_height
+                        + ", "  + timestamp  +  ")</span>";
                 }
                 else
                 {
@@ -391,6 +409,14 @@ function open()
            {
                 // console.log(data); 
                 status_info.innerHTML = "done";
+
+                for (var [pub_key, input_info] of my_ringmembers)
+                {
+                    input_info['row'].classList.remove('bg-light');
+                }
+
+                finished_seen = true;
+
                 return;
            }
 
@@ -410,14 +436,14 @@ function open()
 
            if ("outputs" in data)
            {
-               if (ringmembers_table.style.display == "block")
+               if (!ringmembers_table.classList.contains("is-hidden"))
                {
-                    ringmembers_table.style.display = "none";
+                    ringmembers_table.classList.add("is-hidden");
                }
 
-               if (outputs_table.style.display == "none")
+               if (outputs_table.classList.contains("is-hidden"))
                {
-                    outputs_table.style.display = "block";
+                    outputs_table.classList.remove("is-hidden");
                }
 
                var blk_number    = data["block"];
@@ -467,14 +493,14 @@ function open()
             if ("inputs" in data)
             {
 
-                if (outputs_table.style.display == "block")
+                if (!outputs_table.classList.contains('is-hidden'))
                 {
-                     outputs_table.style.display = "none";
+                     outputs_table.classList.add('is-hidden');
                 }
 
-                if (ringmembers_table.style.display == "none")
+                if (ringmembers_table.classList.contains('is-hidden'))
                 {
-                     ringmembers_table.style.display = "block";
+                     ringmembers_table.classList.remove('is-hidden');
                 }
 
 
@@ -498,6 +524,11 @@ function open()
 
                     //var new_row /var subaddress_index = output.subaddr_idx;
                     var new_row = null;
+                
+                    for (var [pub_key, input_info] of my_ringmembers)
+                    {
+                        input_info['row'].classList.remove('bg-light');
+                    }
 
                     if (!my_ringmembers.has(input.public_key))
                     {
@@ -519,6 +550,8 @@ function open()
                         tx_hash.appendChild(tx_link);
                     
                         count.innerHTML = '1';
+                        
+                        new_row.classList.add('bg-light')
 
                         my_ringmembers.set(input.public_key, 
                                    {row: new_row, 
@@ -531,7 +564,9 @@ function open()
                     {
                         var output_info = my_ringmembers.get(input.public_key)
                         //my_ringmembers.get(input.public_key).push(tx);
-
+                        
+                        output_info['row'].classList.add('bg-light')
+                        
                         output_info['txs'].push(tx);
                         count = output_info['count'];
                         count.innerHTML = output_info['txs'].length.toString();

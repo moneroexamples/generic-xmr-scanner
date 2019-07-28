@@ -51,14 +51,11 @@ InputSearchLiteTask::process_tx(
         
     if (!inputs_found.empty())
     {
-        auto tx_hash = pod_to_hex(
-                cryptonote::get_transaction_hash(tx)); 
-
         auto msg = jb().success(
                     {
                       {"block", blk_no},
                       {"timestamp", blk.timestamp},
-                      {"tx", tx_hash},
+                      {"tx", txhash2str(tx)},
                       {"inputs", inputs_found}
                     });
 

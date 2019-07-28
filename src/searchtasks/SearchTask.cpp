@@ -160,6 +160,7 @@ SearchTask::operator()()
     } // while(!m_should_finish)
     
     results.push_back(jb().success({{"finished", true}}));
+
     notify(this);
 }
 
@@ -174,6 +175,14 @@ size_t
 SearchTask::blocks_no() const
 {
     return m_blocks_no;
+}
+
+string 
+SearchTask::txhash2str(transaction const& tx) const
+{
+    return pod_to_hex(
+          cryptonote::get_transaction_hash(tx)); 
+
 }
 
 }

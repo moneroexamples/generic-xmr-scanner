@@ -28,9 +28,15 @@ bool skip_coinbase() const;
 size_t blocks_no() const;
 
 protected:
-    size_t m_blocks_no {720};
-    bool m_skip_coinbase {true};
-    uint64_t m_blocks_lookahead {10};
+
+
+string 
+txhash2str(transaction const& tx) const;
+
+
+size_t m_blocks_no {720};
+bool m_skip_coinbase {true};
+uint64_t m_blocks_lookahead {10};
 };
 
 }

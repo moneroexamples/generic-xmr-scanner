@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/chota.css">
     <script src='js/bignumber.min.js'></script>
   </head>
+
 <body>
  <div class="container">
      <div class="row">
@@ -52,7 +53,7 @@
             <label for="skip-coinbase"></label>
             <input id="skip-coinbase" name="checkbox" type="checkbox" checked="checked">Skip coinbase transactions 
             <label for="ring-members"></label>
-            <input id="ring-members" name="checkbox" type="checkbox">Ring members detection
+            <input id="ring-members" name="checkbox" type="checkbox">Ring members use 
             <button class="pull-right" id="submit-btn" type="button">Search</button>
         </p>
        </fieldset>
@@ -72,7 +73,7 @@
   <table id="outputs-table" class="is-hidden">
     <thead>
       <tr>
-        <th>Block Height</th>
+        <th>Height</th>
         <th>Timestamp</th>
         <th>Transaction id</th>
         <th>Amount</th>
@@ -86,8 +87,8 @@
    <table id="ringmembers-table" class="is-hidden">
       <thead>
         <tr>
-          <th>Block Height</th>
-          <th>Timestamp</th>
+          <th>Last height</th>
+          <th>Last found on</th>
           <th>Output public key</th>
           <th>Count</th>
         </tr>
@@ -537,9 +538,12 @@ function open()
                         var timestamp = new_row.insertCell(1);
                         var tx_hash = new_row.insertCell(2);
                         var count = new_row.insertCell(3);
-                    
+
                         blk.innerHTML        = blk_number;
                         timestamp.innerHTML  = blk_timestamp;
+
+                        var input_details =  blk_timestamp + ' ' 
+                                            + tx;
 
                         var tx_link = document.createElement('a');
                         tx_link.appendChild(document.createTextNode(input.public_key));
@@ -548,6 +552,35 @@ function open()
                         tx_link.href = window.xmrexplorer + tx;
                     
                         tx_hash.appendChild(tx_link);
+
+                        // apend link list which will have tx details
+                        var ul = document.createElement('ul');
+                        ul.classList.add('text-grey', 'text-x-small', 'is-hidden');
+
+                        var li = document.createElement('li');
+                        li.appendChild(document.createTextNode(input_details));
+                        ul.appendChild(li);
+
+                        count.onclick = function() {
+
+                            var ull = ul;
+
+                            if (!ull.classList.contains('is-hidden'))
+                            {
+                                 ull.classList.add('is-hidden');
+                                 return;
+                            }
+
+                            if (ull.classList.contains('is-hidden'))
+                            {
+                                 ull.classList.remove('is-hidden');
+                                 return;
+                            }
+                        };
+
+                        count.style.cursor = 'pointer';
+                    
+                        tx_hash.appendChild(ul);
                     
                         count.innerHTML = '1';
                         
@@ -557,6 +590,7 @@ function open()
                                    {row: new_row, 
                                    count: count,
                                    block: blk,
+                                   tx_list: ul, 
                                    timestamp: timestamp,
                                    txs: [tx]});
                     }
@@ -569,10 +603,19 @@ function open()
                         
                         output_info['txs'].push(tx);
                         count = output_info['count'];
-                        count.innerHTML = output_info['txs'].length.toString();
+                        count.innerHTML = output_info['txs']
+                                            .length.toString();
 
                         output_info['block'].innerHTML        = blk_number;
                         output_info['timestamp'].innerHTML  = blk_timestamp;
+
+                        var input_details = blk_timestamp + ' ' 
+                                            + tx;
+
+                        var li = document.createElement('li');
+                        li.appendChild(document.createTextNode(input_details));
+
+                        output_info['tx_list'].appendChild(li);
                     }
                     
                     //blk.innerHTML        = blk_number;

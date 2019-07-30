@@ -8,7 +8,7 @@
   --grid-maxWidth: 120rem;
   --grid-gutter: 2rem;
   --font-size: 1.6rem;
-  --font-family: -apple-system, BlinkMacSystemFont, Avenir, "Avenir Next",
+  font-family: -apple-system, BlinkMacSystemFont, Avenir, "Avenir Next",
     "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
     "Droid Sans", "Helvetica Neue", sans-serif;
 }
@@ -29,8 +29,8 @@ body {
   line-height: 1.6;
   font-size: var(--font-size);
   font-weight: 400;
-  font-family: "Segoe UI", "Helvetica Neue", sans-serif; /*fallback*/
-  font-family: var(--font-family);
+  font-family: "Courier New", "Segoe UI", "Helvetica Neue", sans-serif; 
+  #font-family: var(--font-family);
   margin: 0;
   padding: 0;
 }

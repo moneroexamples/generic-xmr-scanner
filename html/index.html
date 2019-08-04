@@ -87,10 +87,10 @@
    <table id="ringmembers-table" class="is-hidden">
       <thead>
         <tr>
-          <th>Last height</th>
-          <th>Last found on</th>
           <th>Output public key</th>
           <th>Count</th>
+          <th>Last height</th>
+          <th>Last found on</th>
         </tr>
       </thead>
       <tbody id="ringmembers-table-body">
@@ -530,20 +530,21 @@ function open()
                     {
                         input_info['row'].classList.remove('bg-light');
                     }
+                        
+                    var input_details = '<a href="'+ window.xmrexplorer + tx
+                                        + '" target="_blank">' 
+                                        + 'tx: ' + tx + '</a>';
 
                     if (!my_ringmembers.has(input.public_key))
                     {
                         new_row = ringmembers_table_body.insertRow(-1);
-                        var blk = new_row.insertCell(0);
-                        var timestamp = new_row.insertCell(1);
-                        var tx_hash = new_row.insertCell(2);
-                        var count = new_row.insertCell(3);
+                        var tx_hash = new_row.insertCell(0);
+                        var count = new_row.insertCell(1);
+                        var blk = new_row.insertCell(2);
+                        var timestamp = new_row.insertCell(3);
 
                         blk.innerHTML        = blk_number;
                         timestamp.innerHTML  = blk_timestamp;
-
-                        var input_details =  blk_timestamp + ' ' 
-                                            + tx;
 
                         var tx_link = document.createElement('a');
                         tx_link.appendChild(document.createTextNode(input.public_key));
@@ -553,12 +554,15 @@ function open()
                     
                         tx_hash.appendChild(tx_link);
 
+                        count.style.textDecoration = 'underline';
+
                         // apend link list which will have tx details
                         var ul = document.createElement('ul');
-                        ul.classList.add('text-grey', 'text-x-small', 'is-hidden');
+                        ul.classList.add('text-grey', 'text-small', 'is-hidden');
 
                         var li = document.createElement('li');
-                        li.appendChild(document.createTextNode(input_details));
+                        //li.appendChild(document.createTextNode(input_details));
+                        li.innerHTML = input_details;
                         ul.appendChild(li);
 
                         count.onclick = function() {
@@ -597,7 +601,6 @@ function open()
                     else
                     {
                         var output_info = my_ringmembers.get(input.public_key)
-                        //my_ringmembers.get(input.public_key).push(tx);
                         
                         output_info['row'].classList.add('bg-light')
                         
@@ -609,19 +612,13 @@ function open()
                         output_info['block'].innerHTML        = blk_number;
                         output_info['timestamp'].innerHTML  = blk_timestamp;
 
-                        var input_details = blk_timestamp + ' ' 
-                                            + tx;
-
                         var li = document.createElement('li');
-                        li.appendChild(document.createTextNode(input_details));
+                        //li.appendChild(document.createTextNode(input_details));
+                        li.innerHTML = input_details;
 
                         output_info['tx_list'].appendChild(li);
                     }
                     
-                    //blk.innerHTML        = blk_number;
-                    //timestamp.innerHTML  = blk_timestamp;
-                    //public_key.innerHTML = output.public_key;
-                    //amountt.innerHTML = amount.dividedBy(1e12).toString();
                 }
 
                 //console.log('ring_memebrs found are:', my_ringmembers);

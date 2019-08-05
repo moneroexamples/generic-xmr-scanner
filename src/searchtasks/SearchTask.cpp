@@ -4,6 +4,17 @@
 #include "drogon/WebSocketController.h"
 
 
+namespace cryptonote
+{
+    void
+    to_json(nlohmann::json& j, transaction const& tx)
+    {
+        j = epee::string_tools::pod_to_hex(
+                get_transaction_hash(tx));
+    }
+
+}
+
 namespace xmreg
 {
 
@@ -175,14 +186,6 @@ size_t
 SearchTask::blocks_no() const
 {
     return m_blocks_no;
-}
-
-string 
-SearchTask::txhash2str(transaction const& tx) const
-{
-    return pod_to_hex(
-          cryptonote::get_transaction_hash(tx)); 
-
 }
 
 }

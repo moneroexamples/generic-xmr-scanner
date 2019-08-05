@@ -17,6 +17,7 @@ using namespace std;
 void
 to_json(nl::json& j, Output::info const& info);
 
+
 class OutputSearchTask:  public SearchTask 
 {
 

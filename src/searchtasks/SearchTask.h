@@ -3,10 +3,18 @@
 
 #include "ISearchTask.h"
 
+namespace cryptonote 
+{
+void
+to_json(nlohmann::json& j, transaction const& tx);
+}
+
+
 namespace xmreg
 {
 
 using namespace std;
+
 
 class SearchTask: public ISearchTask
 {
@@ -28,10 +36,6 @@ bool skip_coinbase() const;
 size_t blocks_no() const;
 
 protected:
-
-
-string 
-txhash2str(transaction const& tx) const;
 
 
 size_t m_blocks_no {720};

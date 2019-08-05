@@ -68,7 +68,7 @@ OutputSearchTask::process_tx(
                     {
                       {"block", blk_no},
                       {"timestamp", blk.timestamp},
-                      {"tx", txhash2str(tx)},
+                      {"tx", tx},
                       {"outputs", outputs_found}
                     });
 

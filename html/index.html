@@ -64,8 +64,9 @@
     </div>
 
     <div class="row is-center">
-     <p id="progress" style="display:none">
-       Scanning progress: <span id="status-info">n/a</span>
+     <p id="progress" class="is-text-center is-hidden ">
+         Scanning progress: <span id="status-info">n/a</span><br/>
+         <small id='progress-msg'>If something is found, it should be listed below.</small>
      </p>
     </div>
 
@@ -288,15 +289,15 @@ function open()
  if ("WebSocket" in window)
  {
     var ws = new WebSocket(window.xmrscanner_url_ws + '/search');
+    
+    var progress = document.getElementById("progress");
+    var progressMsg = document.getElementById("progress-msg"); 
 
     ws.onopen = function()
     {
         remove_children('messages');
         remove_children('outputs-table-body');
         remove_children('ringmembers-table-body');
-
-        //document.getElementById("ringmembers-table").style.display="none";
-        //document.getElementById("outputs-table").style.display="none";
 
         add_message("Established connection.");
 
@@ -313,9 +314,14 @@ function open()
                        "coinbase": skip_coinbase,
                        "ringmembers": ring_members};
 
-        add_message("submitting address and viewkey to the server");
-
         ws.send(JSON.stringify(message));
+
+        add_message("submitting address and viewkey to the server: " 
+                    + "<span class='text-success'>OK</span>");
+
+
+         progressMsg.innerText = "If something is found, it should be listed below.";
+
     };
      
     var my_ringmembers = new Map(); 
@@ -325,7 +331,6 @@ function open()
     ws.onmessage = function(evt)
     {
        var results = "";
-
 
         try 
         {
@@ -347,9 +352,11 @@ function open()
             }
        }
 
-       var progress = document.getElementById("progress");
 
-       progress.style.display = "block"
+       if (progress.classList.contains('is-hidden'))
+       {
+         progress.classList.remove('is-hidden');
+       }
 
        var status_info = document.getElementById("status-info");
 
@@ -366,8 +373,22 @@ function open()
 
            if (msg["status"] !== "success")
                return;
+           
+           var outputs_table
+                 = document.getElementById("outputs-table");
+
+           var outputs_table_body
+                = document.getElementById("outputs-table-body");
+
+
+           var ringmembers_table
+                  = document.getElementById("ringmembers-table");
+
+           var ringmembers_table_body
+                 = document.getElementById("ringmembers-table-body");
 
            var data = msg["data"];
+
 
            if ("progress" in data && finished_seen == false)
            {
@@ -387,6 +408,13 @@ function open()
                 var percent_complete = (current_block - first_block_height)
                                     / (blockchain_height - first_block_height) * 100;
 
+                if (outputs_table_body.children.length > 0
+                    || ringmembers_table_body.children.length > 0)
+                {
+                    progressMsg.innerText = "Found something. See below. "
+                                   + "Still searching... ";
+                }
+
                 if (current_block < blockchain_height)
                 {
                     status_info.innerHTML = 
@@ -400,11 +428,24 @@ function open()
                 else
                 {
                     status_info.innerHTML = "done";
+
+                    if (outputs_table_body.children.length == 0
+                         && ringmembers_table_body.children.length == 0)
+                     {
+                        progressMsg.innerText = "Nothing was found. "
+                                        + "Maybe try different address "
+                                        + "and viewkey or longer time period?";
+                     }
+                     else
+                     {
+                        progressMsg.innerText = "Results are listed below. ";
+                     }
+
                 }
 
                 return;
            }
-
+           
 
            if ("finished" in data)
            {
@@ -420,20 +461,7 @@ function open()
 
                 return;
            }
-
-
-           var outputs_table
-                 = document.getElementById("outputs-table");
-
-           var outputs_table_body
-                = document.getElementById("outputs-table-body");
-
-
-           var ringmembers_table
-                  = document.getElementById("ringmembers-table");
-
-           var ringmembers_table_body
-                 = document.getElementById("ringmembers-table-body");
+           
 
            if ("outputs" in data)
            {
@@ -538,7 +566,7 @@ function open()
                     if (!my_ringmembers.has(input.public_key))
                     {
                         new_row = ringmembers_table_body.insertRow(-1);
-                        var tx_hash = new_row.insertCell(0);
+                        var out_pub_key = new_row.insertCell(0);
                         var count = new_row.insertCell(1);
                         var blk = new_row.insertCell(2);
                         var timestamp = new_row.insertCell(3);
@@ -546,15 +574,11 @@ function open()
                         blk.innerHTML        = blk_number;
                         timestamp.innerHTML  = blk_timestamp;
 
-                        var tx_link = document.createElement('a');
-                        tx_link.appendChild(document.createTextNode(input.public_key));
-                        tx_link.title = input.public_key;
-                        tx_link.target = '_black';
-                        tx_link.href = window.xmrexplorer + tx;
-                    
-                        tx_hash.appendChild(tx_link);
+                        out_pub_key.innerHTML = "<a style='cursor:pointer'>" 
+                                                + input.public_key 
+                                                + "</a>";
 
-                        count.style.textDecoration = 'underline';
+                        //out_pub_key.style.cursor = 'pointer';
 
                         // apend link list which will have tx details
                         var ul = document.createElement('ul');
@@ -565,7 +589,7 @@ function open()
                         li.innerHTML = input_details;
                         ul.appendChild(li);
 
-                        count.onclick = function() {
+                        out_pub_key.onclick = function() {
 
                             var ull = ul;
 
@@ -582,9 +606,9 @@ function open()
                             }
                         };
 
-                        count.style.cursor = 'pointer';
+                        //count.style.cursor = 'pointer';
                     
-                        tx_hash.appendChild(ul);
+                        out_pub_key.appendChild(ul);
                     
                         count.innerHTML = '1';
                         
@@ -621,19 +645,9 @@ function open()
                     
                 }
 
-                //console.log('ring_memebrs found are:', my_ringmembers);
-
-                //for (var [pub_key, txs] of my_ringmembers)
-                //{
-                  //  console.log(pub_key, txs['txs'].length);
-               // }
-
-
-                // once my_ringmembers got updated with new inputs
-                // lets sort it
-
                 return;
-            }
+
+            } // if ("inputs" in data)
 
         });
 
@@ -642,12 +656,12 @@ function open()
 
     ws.onclose = function(evt)
     {
-       add_message("Connection closed with RFC6455 code " + evt.code + ".");
+        add_message("<span class='text-error'>Connection closed with RFC6455 code " + evt.code + ".</span>");
     };
 
     ws.onerror = function( evt )
     {
-       add_message("Error: socket connection interrupted.");
+        add_message("<span class='text-error'>Error: socket connection interrupted.</span>");
     };
 
     window.restbed.ws = ws;

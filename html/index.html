@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/chota.css">
     <script src='js/bignumber.min.js'></script>
   </head>
+
 <body>
  <div class="container">
      <div class="row">
@@ -45,29 +46,35 @@
 	   <label for="timespan">Start scannig from</label>
 		<select id="timespan">
 		  <optgroup label="Since when?">
-			<!--<option selected="selected" value="1">One day ago</option>
-			<option value="2">One week ago</option>
-            <option value="3">One month ago</option>-->
 		  </optgroup>
 		</select>
         </p>
         <p>
-        <label for="skip-coinbase"></label>
-        <input id="skip-coinbase" name="checkbox" type="checkbox" checked="checked">Skip coinbase transactions (faster scanning)
-        <button class="pull-right" id="submit-btn" type="button">Search</button>
-		</p>
+            <label for="skip-coinbase"></label>
+            <input id="skip-coinbase" name="checkbox" type="checkbox" checked="checked">Skip coinbase transactions 
+            <label for="ring-members"></label>
+            <input id="ring-members" name="checkbox" type="checkbox">Ring members use 
+            <button class="pull-right" id="submit-btn" type="button">Search</button>
+        </p>
        </fieldset>
      </form>
 
     <div class="row">
       <ul id="messages"></ul>
-  </div>
+    </div>
 
-  <table id="outputs-table">
-    <caption>Output scanning results. Progress: <span id="status-info">n/a</span></caption>
+    <div class="row is-center">
+     <p id="progress" class="is-text-center is-hidden ">
+         Scanning progress: <span id="status-info">n/a</span><br/>
+         <small id='progress-msg'>If something is found, it should be listed below.</small>
+     </p>
+    </div>
+
+    <div class="row">  
+  <table id="outputs-table" class="is-hidden">
     <thead>
       <tr>
-        <th>Block Height</th>
+        <th>Height</th>
         <th>Timestamp</th>
         <th>Transaction id</th>
         <th>Amount</th>
@@ -77,6 +84,20 @@
     <tbody id="outputs-table-body">
     </tbody>
   </table>
+
+   <table id="ringmembers-table" class="is-hidden">
+      <thead>
+        <tr>
+          <th>Output public key</th>
+          <th>Count</th>
+          <th>Last height</th>
+          <th>Last found on</th>
+        </tr>
+      </thead>
+      <tbody id="ringmembers-table-body">
+      </tbody>
+    </table>
+    </div>
 
  </div>
 
@@ -251,6 +272,7 @@ function setup_submit_btn()
 
         open();
     });
+
 }
 
 function remove_children(elem_name)
@@ -267,11 +289,15 @@ function open()
  if ("WebSocket" in window)
  {
     var ws = new WebSocket(window.xmrscanner_url_ws + '/search');
+    
+    var progress = document.getElementById("progress");
+    var progressMsg = document.getElementById("progress-msg"); 
 
     ws.onopen = function()
     {
-		remove_children('messages');
-		remove_children('outputs-table-body');
+        remove_children('messages');
+        remove_children('outputs-table-body');
+        remove_children('ringmembers-table-body');
 
         add_message("Established connection.");
 
@@ -279,17 +305,28 @@ function open()
         var viewkey = document.getElementById("viewkey").value;
         var timespan = document.getElementById("timespan").value;
         var skip_coinbase = document.getElementById("skip-coinbase").checked;
+        var ring_members = document.getElementById("ring-members").checked;
 
         var message = {"scanner": "outputs",
                        "address": address, 
                        "viewkey": viewkey,
                        "timespan": timespan,
-                       "coinbase": skip_coinbase};
-
-        add_message("submitting address and viewkey to the server");
+                       "coinbase": skip_coinbase,
+                       "ringmembers": ring_members};
 
         ws.send(JSON.stringify(message));
+
+        add_message("submitting address and viewkey to the server: " 
+                    + "<span class='text-success'>OK</span>");
+
+
+         progressMsg.innerText = "If something is found, it should be listed below.";
+
     };
+     
+    var my_ringmembers = new Map(); 
+
+    var first_block_height = null;
 
     ws.onmessage = function(evt)
     {
@@ -315,7 +352,18 @@ function open()
             }
        }
 
+
+       if (progress.classList.contains('is-hidden'))
+       {
+         progress.classList.remove('is-hidden');
+       }
+
        var status_info = document.getElementById("status-info");
+
+        // sometimes last msgs can come out of order
+        // so we mark here if finish was seen just in case
+        // we get some out-of-order msg.
+        var finished_seen = false;
 
         results["msgs"].forEach(function(msg)
         {
@@ -325,44 +373,107 @@ function open()
 
            if (msg["status"] !== "success")
                return;
+           
+           var outputs_table
+                 = document.getElementById("outputs-table");
+
+           var outputs_table_body
+                = document.getElementById("outputs-table-body");
+
+
+           var ringmembers_table
+                  = document.getElementById("ringmembers-table");
+
+           var ringmembers_table_body
+                 = document.getElementById("ringmembers-table-body");
 
            var data = msg["data"];
 
-           if ("progress" in data)
+
+           if ("progress" in data && finished_seen == false)
            {
                 var current_block = data["progress"]["current_block"];
+
+                if (!first_block_height)
+                    first_block_height = current_block; 
+
                 var blockchain_height 
                    = data["progress"]["blockchain_height"];
+
                 var timestamp = formatDate(
                                    new Date(
                                    data["progress"]["timestamp"]*1000)
                                     , '%Y-%M-%d %H:%m:%s');
 
+                var percent_complete = (current_block - first_block_height)
+                                    / (blockchain_height - first_block_height) * 100;
+
+                if (outputs_table_body.children.length > 0
+                    || ringmembers_table_body.children.length > 0)
+                {
+                    progressMsg.innerText = "Found something. See below. "
+                                   + "Still searching... ";
+                }
+
                 if (current_block < blockchain_height)
                 {
-                    status_info.innerHTML = current_block 
-                                + "/" + blockchain_height
-                                + " (scanning blocks from " + timestamp + ")";
+                    status_info.innerHTML = 
+                        "<span class=\"text-primary\"><strong>" 
+                            + percent_complete.toFixed(2) + "%" 
+                        + "</strong></span> "
+                        + "<span class=\"text-grey\">(" 
+                        + current_block + "/" + blockchain_height
+                        + ", "  + timestamp  +  ")</span>";
                 }
                 else
                 {
                     status_info.innerHTML = "done";
+
+                    if (outputs_table_body.children.length == 0
+                         && ringmembers_table_body.children.length == 0)
+                     {
+                        progressMsg.innerText = "Nothing was found. "
+                                        + "Maybe try different address "
+                                        + "and viewkey or longer time period?";
+                     }
+                     else
+                     {
+                        progressMsg.innerText = "Results are listed below. ";
+                     }
+
                 }
 
                 return;
            }
-
+           
 
            if ("finished" in data)
            {
                 // console.log(data); 
                 status_info.innerHTML = "done";
+
+                for (var [pub_key, input_info] of my_ringmembers)
+                {
+                    input_info['row'].classList.remove('bg-light');
+                }
+
+                finished_seen = true;
+
                 return;
            }
+           
 
            if ("outputs" in data)
            {
-               var outputs_table = document.getElementById("outputs-table-body");
+               if (!ringmembers_table.classList.contains("is-hidden"))
+               {
+                    ringmembers_table.classList.add("is-hidden");
+               }
+
+               if (outputs_table.classList.contains("is-hidden"))
+               {
+                    outputs_table.classList.remove("is-hidden");
+               }
 
                var blk_number    = data["block"];
                //var blk_timestamp = new Date(data["timestamp"]*1000).toUTCString();
@@ -382,7 +493,7 @@ function open()
                    var subaddress_index = output.subaddr_idx;
 
                    //var new_row = outputs_table.insertRow(-1);
-                   var new_row = outputs_table.insertRow(0);
+                   var new_row = outputs_table_body.insertRow(0);
 
                    var blk = new_row.insertCell(0);
                    var timestamp = new_row.insertCell(1);
@@ -407,6 +518,137 @@ function open()
 
                return;
            }
+
+            if ("inputs" in data)
+            {
+
+                if (!outputs_table.classList.contains('is-hidden'))
+                {
+                     outputs_table.classList.add('is-hidden');
+                }
+
+                if (ringmembers_table.classList.contains('is-hidden'))
+                {
+                     ringmembers_table.classList.remove('is-hidden');
+                }
+
+
+                var blk_number    = data["block"];
+                //var blk_timestamp = new Date(data["timestamp"]*1000).toUTCString();
+                var blk_timestamp = formatDate(new Date(data["timestamp"]*1000), '%Y-%M-%d %H:%m:%s');
+
+                var tx            = data["tx"];
+
+                for (var i = 0; i < data["inputs"].length; i++)
+                {
+                    var input = data["inputs"][i];
+
+                    //console.log(input);
+
+                    var amount = BigNumber(input["amount"]);
+
+                    var to_show = input.public_key
+                         + ", " + amount.toString();
+                    //add_message(to_show);
+
+                    //var new_row /var subaddress_index = output.subaddr_idx;
+                    var new_row = null;
+                
+                    for (var [pub_key, input_info] of my_ringmembers)
+                    {
+                        input_info['row'].classList.remove('bg-light');
+                    }
+                        
+                    var input_details = '<a href="'+ window.xmrexplorer + tx
+                                        + '" target="_blank">' 
+                                        + 'tx: ' + tx + '</a>';
+
+                    if (!my_ringmembers.has(input.public_key))
+                    {
+                        new_row = ringmembers_table_body.insertRow(-1);
+                        var out_pub_key = new_row.insertCell(0);
+                        var count = new_row.insertCell(1);
+                        var blk = new_row.insertCell(2);
+                        var timestamp = new_row.insertCell(3);
+
+                        blk.innerHTML        = blk_number;
+                        timestamp.innerHTML  = blk_timestamp;
+
+                        out_pub_key.innerHTML = "<a style='cursor:pointer'>" 
+                                                + input.public_key 
+                                                + "</a>";
+
+                        //out_pub_key.style.cursor = 'pointer';
+
+                        // apend link list which will have tx details
+                        var ul = document.createElement('ul');
+                        ul.classList.add('text-grey', 'text-small', 'is-hidden');
+
+                        var li = document.createElement('li');
+                        //li.appendChild(document.createTextNode(input_details));
+                        li.innerHTML = input_details;
+                        ul.appendChild(li);
+
+                        out_pub_key.onclick = function() {
+
+                            var ull = ul;
+
+                            if (!ull.classList.contains('is-hidden'))
+                            {
+                                 ull.classList.add('is-hidden');
+                                 return;
+                            }
+
+                            if (ull.classList.contains('is-hidden'))
+                            {
+                                 ull.classList.remove('is-hidden');
+                                 return;
+                            }
+                        };
+
+                        //count.style.cursor = 'pointer';
+                    
+                        out_pub_key.appendChild(ul);
+                    
+                        count.innerHTML = '1';
+                        
+                        new_row.classList.add('bg-light')
+
+                        my_ringmembers.set(input.public_key, 
+                                   {row: new_row, 
+                                   count: count,
+                                   block: blk,
+                                   tx_list: ul, 
+                                   timestamp: timestamp,
+                                   txs: [tx]});
+                    }
+                    else
+                    {
+                        var output_info = my_ringmembers.get(input.public_key)
+                        
+                        output_info['row'].classList.add('bg-light')
+                        
+                        output_info['txs'].push(tx);
+                        count = output_info['count'];
+                        count.innerHTML = output_info['txs']
+                                            .length.toString();
+
+                        output_info['block'].innerHTML        = blk_number;
+                        output_info['timestamp'].innerHTML  = blk_timestamp;
+
+                        var li = document.createElement('li');
+                        //li.appendChild(document.createTextNode(input_details));
+                        li.innerHTML = input_details;
+
+                        output_info['tx_list'].appendChild(li);
+                    }
+                    
+                }
+
+                return;
+
+            } // if ("inputs" in data)
+
         });
 
        // console.log(results);
@@ -414,12 +656,12 @@ function open()
 
     ws.onclose = function(evt)
     {
-       add_message("Connection closed with RFC6455 code " + evt.code + ".");
+        add_message("<span class='text-error'>Connection closed with RFC6455 code " + evt.code + ".</span>");
     };
 
     ws.onerror = function( evt )
     {
-       add_message("Error: socket connection interrupted.");
+        add_message("<span class='text-error'>Error: socket connection interrupted.</span>");
     };
 
     window.restbed.ws = ws;

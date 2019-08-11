@@ -5,6 +5,7 @@
 #include "searchtasks/TestSearchTask.h"
 #include "config/DefaultConfig.h"
 #include "utility/traits.hpp"
+#include "JsonBuilder.h"
 
 #include "FiberPool.hpp"
 

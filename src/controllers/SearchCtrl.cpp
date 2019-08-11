@@ -85,15 +85,32 @@ SearchWebSocketCtrl::handleNewMessage(
          }
 
          //cout << jmessage->dump() << endl;
+
+         unique_ptr<ISearchTask> search_task;
+
+         if (jmessage->contains("ringmembers")
+                 && (*jmessage)["ringmembers"].get<bool>() == true)
+         {
+             cout << "Create InputSearchTask task\n";
+
+             //search_task = make_task<InputSearchTask>(
+                     //*jmessage, m_task_manager->config());
              
-         auto search_task = OutputSearchTask::create(
-                 *jmessage,
-                 m_task_manager->config());
+             search_task = make_task<InputSearchLiteTask>(
+                     *jmessage, m_task_manager->config());
+         }
+         else
+         {
+             cout << "Create OutputSearchTask task\n";
+
+             search_task = make_task<OutputSearchTask>(
+                     *jmessage, m_task_manager->config());
+         }
 
          if (!search_task)
          {
              send_and_close(ws_conn,
-                            "OutputSearchTask creation failed");
+                            "SearchTask creation failed");
              return;
          }
          

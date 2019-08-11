@@ -47,6 +47,14 @@
     border: 1px solid var(--color-success) !important;
 }
 
+.text-small {
+    font-size: small;
+}
+
+.text-x-small {
+    font-size: x-small;
+}
+
 .text-primary {
     color: var(--color-primary) !important;
 }

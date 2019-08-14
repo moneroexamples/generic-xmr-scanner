@@ -97,21 +97,32 @@ xmreg::DefaultConfig default_config {config_path};
 // check if ssl is enabled
 auto ssl = default_config.ssl();
 
+filesystem::path ssl_key;
+filesystem::path ssl_crt;
+
 if (ssl.enabled)
 {
     // check if given server key and crt files exist
-    if (!std::filesystem::exists(ssl.key))
+    
+    ssl_key = xmreg::expand(ssl.key);
+    ssl_crt = xmreg::expand(ssl.crt);
+
+    if (!std::filesystem::exists(ssl_key))
     {
-        cerr << ssl.key << " ssl-key does not exist!\n";
+        cerr << ssl_key << " ssl-key does not exist!\n";
         return EXIT_FAILURE;
     }
     
-    if (!std::filesystem::exists(ssl.crt))
+    if (!std::filesystem::exists(ssl_crt))
     {
-        cerr << ssl.crt << " ssl-crt does not exist!\n";
+        cerr << ssl_crt << " ssl-crt does not exist!\n";
         return EXIT_FAILURE;
     }
+
+    LOG_INFO << "ssl key: " << ssl_key;
+    LOG_INFO << "ssl crt: " << ssl_crt;
 }
+
 
 if (fiberpool_threads_no == 0)
 {
@@ -167,7 +178,7 @@ app().setIdleConnectionTimeout(1h);
 if (ssl.enabled)
 {
     app().addListener("0.0.0.0", port, true,
-                      ssl.crt, ssl.key);
+                      ssl_crt, ssl_key);
     
     LOG_INFO << "SSL enabled.";
 }

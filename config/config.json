@@ -11,7 +11,7 @@
   {
     "enable" : false,
     "_comment": "below are example paths to crt and key files need to be given",
-    "ssl-key": "/path/to/privkey.pem",
-    "ssl-crt": "/path/to/cert.pem"
+    "ssl-key": "/path/to/privkey1.pem",
+    "ssl-crt": "/path/to/cert1.pem"
   }
 }

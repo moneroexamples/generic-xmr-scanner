@@ -119,5 +119,31 @@ catch (po::error const& ex)
 return options;
 }
 
+// based on https://stackoverflow.com/a/42274022
+filesystem::path 
+expand (filesystem::path in) 
+{
+    string s = in.string();
+    if (s.size() < 1) 
+        return in;
+
+    if (s[0] != '~')
+       return in; 
+
+    const char * home = getenv("HOME");
+
+    if (home == NULL) 
+    {
+      cerr << "error: HOME variable not set." 
+           << endl;
+      throw std::invalid_argument(
+              "error: HOME environment variable not set.");
+    }
+
+    s = string(home) + s.substr(1, s.size () - 1);
+
+    return filesystem::path (s);
+}
+
 
 }

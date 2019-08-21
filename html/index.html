@@ -438,7 +438,7 @@ function open()
                      }
                      else
                      {
-                        progressMsg.innerText = "Results are listed below. ";
+                        progressMsg.innerText = "Results are listed below.";
                      }
 
                 }
@@ -451,6 +451,8 @@ function open()
            {
                 // console.log(data); 
                 status_info.innerHTML = "done";
+                
+                progressMsg.innerText = "Results are listed below.";
 
                 for (var [pub_key, input_info] of my_ringmembers)
                 {

@@ -451,9 +451,13 @@ function open()
            {
                 // console.log(data); 
                 status_info.innerHTML = "done";
-                
-                progressMsg.innerText = "Results are listed below.";
 
+                if (outputs_table_body.children.length != 0                               
+                      || ringmembers_table_body.children.length != 0)                  
+                {                                                                         
+                  progressMsg.innerText = "Results are listed below.";                  
+                }   
+                
                 for (var [pub_key, input_info] of my_ringmembers)
                 {
                     input_info['row'].classList.remove('bg-light');

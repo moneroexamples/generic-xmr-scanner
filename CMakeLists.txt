@@ -21,12 +21,6 @@ set(BUILD_CTL FALSE CACHE INTERNAL "")
 set(BUILD_EXAMPLES FALSE CACHE INTERNAL "")
 add_subdirectory(ext/drogon)
 
-# this find will just give as interface target
-# Drogon::Drogon
-# it does not really checks for drogon libraries presence
-# it assumes they exists
-find_package(Drogon)
-
 find_package(Boost REQUIRED
     COMPONENTS fiber)
 
@@ -51,7 +45,7 @@ target_include_directories(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
     PRIVATE 
         XMREG::core 
-        Drogon::Drogon  
+        drogon  
         Boost::fiber
         stdc++fs)
 

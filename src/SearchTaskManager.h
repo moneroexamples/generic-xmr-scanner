@@ -2,7 +2,7 @@
 #define SEARCHTASKMGR_H
 
 #include "searchtasks/OutputSearchTask.h"
-#include "searchtasks/TestSearchTask.h"
+//#include "searchtasks/TestSearchTask.h"
 #include "config/DefaultConfig.h"
 #include "utility/traits.hpp"
 #include "JsonBuilder.h"
@@ -40,13 +40,13 @@ struct Task : public ISearchObserver
     task_t task;
     task_future_t task_future;
     
-    list<std::pair<WebSocketConnectionPtr, 
+    list<std::pair<drogon::WebSocketConnectionPtr, 
                   size_t /* last index of message sent */
                       >> conns;
 
     explicit Task(task_t&& _task,
                   task_future_t&& _task_future,
-                  WebSocketConnectionPtr _conn)
+                  drogon::WebSocketConnectionPtr _conn)
         : task {std::move(_task)},
           task_future {std::move(_task_future)},
           conns {make_pair(std::move(_conn), 0)}
@@ -54,7 +54,7 @@ struct Task : public ISearchObserver
         task->subscribe(this);
     }
 
-    void add_conn(WebSocketConnectionPtr _conn)
+    void add_conn(drogon::WebSocketConnectionPtr _conn)
     {
         conns.push_back(make_pair(std::move(_conn),0));
     }
@@ -148,7 +148,7 @@ explicit SearchTaskManager
  * and registers it with the task manager's m_tasks
  */
 auto push(std::shared_ptr<ISearchTask>&& task, 
-          WebSocketConnectionPtr const& ws_conn)
+          drogon::WebSocketConnectionPtr const& ws_conn)
 {
 
     static size_t task_no {0};

@@ -1,4 +1,5 @@
 #include "drogon/drogon.h"
+
 #include "src/monero_headers.h"
 
 #include "src/SearchTaskManager.h"

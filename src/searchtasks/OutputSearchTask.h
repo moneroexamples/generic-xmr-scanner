@@ -11,7 +11,6 @@
 namespace xmreg
 {
 
-using namespace drogon;
 using namespace std;
 
 void

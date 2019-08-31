@@ -24,6 +24,12 @@ add_subdirectory(ext/drogon)
 find_package(Boost REQUIRED
     COMPONENTS fiber)
 
+# this find will just give as interface target
+# Drogon::Drogon
+# it does not really checks for drogon libraries presence
+# it assumes they exists
+find_package(Drogon)
+
 add_executable(${PROJECT_NAME}
         main.cpp
         src/utils.cpp
@@ -45,7 +51,7 @@ target_include_directories(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
     PRIVATE 
         XMREG::core 
-        drogon  
+        Drogon::Drogon
         Boost::fiber
         stdc++fs)
 

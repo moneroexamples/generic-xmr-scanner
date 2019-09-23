@@ -64,7 +64,7 @@ git clone --recurse-submodules https://github.com/monero-project/monero.git
 cd monero/
 
 # compile
-USE_SINGLE_BUILDDIR=1 make
+make
 ```
 
 Using `USE_SINGLE_BUILDDIR` flag is important. Without the flag, cmake of the project

@@ -3,6 +3,7 @@
 
 #include "InputSearchTask.h"
 #include "InputSearchLiteTask.h"
+#include "SpendingsSearchTask.h"
 
 #include "../config/DefaultConfig.h"
 

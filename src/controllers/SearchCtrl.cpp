@@ -99,6 +99,13 @@ SearchWebSocketCtrl::handleNewMessage(
              search_task = make_task<InputSearchLiteTask>(
                      *jmessage, m_task_manager->config());
          }
+         else if (jmessage->contains("spendings"))
+         {
+             cout << "Create SpendingsSearchTask task\n";
+
+             search_task = make_task<SpendingsSearchTask>(
+                     *jmessage, m_task_manager->config());
+         }
          else
          {
              cout << "Create OutputSearchTask task\n";

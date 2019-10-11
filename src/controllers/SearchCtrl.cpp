@@ -84,6 +84,14 @@ SearchWebSocketCtrl::handleNewMessage(
              return;
          }
 
+         if ((*jmessage)["address"] == ""s 
+                 || (*jmessage)["viewkey"] == ""s)
+         {
+             send_and_close(ws_conn, "Address and/or viewkey is empty");
+             return;
+         } 
+
+
          //cout << jmessage->dump() << endl;
 
          unique_ptr<ISearchTask> search_task;

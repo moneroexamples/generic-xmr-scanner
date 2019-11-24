@@ -49,23 +49,7 @@ The key technologies used in the scanner are:
 To compile the project, most recent Monero development version (i.e., its `master` branch)
 needs to be compiled first. 
 
-```bash
-# first install monero dependencies
-sudo apt update
-
-sudo apt install git build-essential cmake libboost-all-dev miniupnpc libunbound-dev graphviz doxygen libunwind8-dev pkg-config libssl-dev libcurl4-openssl-dev libgtest-dev libreadline-dev libzmq3-dev libsodium-dev libhidapi-dev libhidapi-libusb0
-
-# go to home folder
-cd ~
-
-# get monero source code
-git clone --recurse-submodules https://github.com/monero-project/monero.git
-
-cd monero/
-
-# compile
-make
-```
+Instruction for compiling monero are here: https://github.com/moneroexamples/monero-compilation
 
 Using `USE_SINGLE_BUILDDIR` flag is important. Without the flag, cmake of the project
 will not be able to locate the compiled monero.

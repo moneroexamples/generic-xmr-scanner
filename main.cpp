@@ -49,7 +49,7 @@ mlog_set_log("1");
 if (!filesystem::exists(blockchain_path))
 {
     cerr << blockchain_path 
-              << "does not exist!\n";
+         << " does not exist!\n";
     return EXIT_FAILURE;
 }
 

@@ -41,7 +41,6 @@ get_current_timestamp()
 filesystem::path 
 expand(filesystem::path in);
 
-
 }
 
 #endif // UTILS_HPP

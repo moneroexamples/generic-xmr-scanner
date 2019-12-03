@@ -7,6 +7,7 @@
 #include "src/controllers/InfoCtrl.h"
 #include "src/config/DefaultAddresses.h"
 #include "src/utils.hpp"
+#include "ext/xmregcore/src/tools.h"
 
 #include <boost/fiber/all.hpp> 
 
@@ -83,6 +84,9 @@ if (!filesystem::exists(config_path))
     cerr << config_path << "does not exist!\n";
     return EXIT_FAILURE;
 }
+
+config_path = xmreg::remove_trailing_path_separator(
+        config_path);
 
 LOG_INFO << "Using default addresses from "
          << filesystem::absolute(default_addresses_path);

@@ -10,11 +10,9 @@ The project aims to develop generic online scanner/searcher for Monero. Its poss
  - transactions with integrated payment ids,
  - and more ...
 
-## Online stagenet version
+## Screenshot
 
-The current development version of the scanner on the stagenet network is available at:
-
- - [https://li1473-17.members.linode.com:4443/](https://li1473-17.members.linode.com:4443/)
+![Generic Monero Scanner](/img/screenshot.pnh)
 
 ## Motivation
 

@@ -5,10 +5,10 @@
 #include <filesystem>
 #else 
 #include <experimental/filesystem>
-namespace std 
-{
-    namespace filesystem = experimental::filesystem;
-}
+// namespace std
+// {
+//     namespace filesystem = experimental::filesystem::v1;
+// }
 #endif
 
 #include <fstream>
@@ -26,7 +26,7 @@ IConfigReader::IConfigReader(string _filepath)
 bool 
 IConfigReader::read()
 {
-    if (!filesystem::exists(filepath))
+    if (!std::experimental::filesystem::v1::exists(filepath))
     {
         cerr << "File " << filepath 
              << " does not exist!\n";

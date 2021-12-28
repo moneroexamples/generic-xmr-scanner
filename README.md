@@ -12,7 +12,7 @@ The project aims to develop generic online scanner/searcher for Monero. Its poss
 
 ## Screenshot
 
-![Generic Monero Scanner](/img/screenshot.pnh)
+![Generic Monero Scanner](/img/screenshot.png)
 
 ## Motivation
 

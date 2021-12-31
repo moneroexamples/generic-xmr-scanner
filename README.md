@@ -83,6 +83,35 @@ The project comes with basic html fronted located in `html` folder. Basic instru
 
 - https://github.com/moneroexamples/generic-xmr-scanner/tree/master/html#basic-html-client-for-the-scanner
 
+#### Using Docker
+
+Instead of building and compiling everything from scrach your own, you can use `Docker`. You still need to have full blockchain on your host, which you share with the docker. Do docker containers do not run monero themselfs. So basically you still need to have full node before you can run the `xmrscanner`.
+
+```
+git clone --recurse-submodules https://github.com/moneroexamples/generic-xmr-scanner
+
+cd generic-xmr-scanner
+
+# build backend image (using 2 cpus)
+docker build --build-arg NPROC=2  . -t xmrscannerbackend
+
+# build frontend image
+docker build ./html -t xmrscannerfrontend
+```
+
+When the two images are build, you can run containers for backend and frontend:
+
+```
+# run backend container on mainnet (-n 0),
+docker run -it -v <path-to-monero-blockckain-on-the-host>:/home/monero/.bitmonero -p 8848:8848  xmrscannerbackend "./xmrscanner -n 0"
+
+# run frontend container
+docker run -it -p 9100:80  xmrscannerfrontend
+```
+
+Once the containers are running, open browser: `http://0.0.0.0:9100/`.
+
+
 #### Program options
 
 ```bash

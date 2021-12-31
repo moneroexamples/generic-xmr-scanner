@@ -3,6 +3,7 @@
 # Example:
 # docker build  -t xmrscanner .
 # docker run -it -v /mnt/w7/bitmonero:/home/monero/.bitmonero -p 8848:8848  xmrscanner
+# For stagenet: docker run -it -v /mnt/w7/bitmonero:/home/monero/.bitmonero -p 8848:8848  xmrscanner "./xmrscanner -n 2"
 #
 FROM ubuntu:20.04 as builder
 
@@ -99,4 +100,4 @@ EXPOSE 8848
 ENTRYPOINT ["/bin/sh", "-c"]
 
 # Set sane defaults that are overridden if the user passes any commands
-CMD ["./xmrscanner"]
+CMD ["./xmrscanner", "-n", "0"]

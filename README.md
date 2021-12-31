@@ -81,7 +81,7 @@ The project comes with basic html fronted located in `html` folder. Basic instru
 
 - https://github.com/moneroexamples/generic-xmr-scanner/tree/master/html#basic-html-client-for-the-scanner
 
-#### Using Docker
+## Using Docker
 
 Instead of building and compiling everything from scrach your own, you can use `Docker`. You still need to have full blockchain on your host, which you share with the docker. Do docker containers do not run monero themselfs. So basically you still need to have full node before you can run the `xmrscanner`.
 

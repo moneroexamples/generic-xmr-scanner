@@ -38,9 +38,7 @@ The key technologies used in the scanner are:
 - [FiberPool](https://github.com/moneroexamples/fiberpool) - single-file header-only C++17 [boost::fiber](https://github.com/boostorg/fiber) thread pool library
 - [xmregcore](https://github.com/moneroexamples/xmregcore) - core utilities used in moneroexample projects.
 
-## Example compilation on Ubuntu 18.04
-
-[![CircleCI](https://circleci.com/gh/moneroexamples/generic-xmr-scanner.svg?style=svg)](https://circleci.com/gh/moneroexamples/generic-xmr-scanner)
+## Example compilation on Ubuntu 20.04
 
 ### Monero download and compilation
 
